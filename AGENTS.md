@@ -2,6 +2,8 @@
 
 - Treat `index.html` and `brochure.css` as the source for future edits.
 - Keep all eight pages unless the user requests a change.
+- Keep every page at the shared 1485 x 2235-unit canvas and 1485 x 2235-point
+  print size, matching the original PDF's common interior page dimensions.
 - Use Fraunces at weight 400 for headings. Preserve the website settings:
   `"opsz" 136, "SOFT" 40, "WONK" 1` and `"kern", "liga", "ss01"`.
 - Use Poppins 400 for paragraphs, 500 for captions, and 600 for labels.

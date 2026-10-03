@@ -2,12 +2,20 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
 
 const require = createRequire('C:/Users/rites/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json');
 const { chromium } = require('playwright');
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'tmp', 'verification');
 fs.mkdirSync(output, { recursive: true });
+for (const file of fs.readdirSync(path.join(root, 'assets', 'artwork')).filter(file => file.endsWith('.svg'))) {
+  const source = fs.readFileSync(path.join(root, 'assets', 'artwork', file), 'utf8');
+  for (const match of source.matchAll(/<path\b[^>]*\bd="([^"]*)"/g)) {
+    const commands = match[1].match(/[A-Za-z]/g) || [];
+    assert.ok(!commands.length || !commands.every(command => /^[MZmz]$/.test(command)), `Empty text outline in ${file} can create stray lines in print`);
+  }
+}
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const page = await browser.newPage({ viewport: { width: 1100, height: 1450 }, deviceScaleFactor: 1 });
 const errors = [];
@@ -19,6 +27,7 @@ await page.waitForSelector('html[data-ready="true"]');
 await page.evaluate(() => document.documentElement.dataset.view='pages');
 await page.waitForLoadState('networkidle');
 await page.waitForFunction(() => [...document.querySelectorAll('object')].every(object => object.contentDocument?.readyState==='complete'));
+await page.selectOption('#zoom', '0.5');
 await page.screenshot({ path: path.join(output, 'viewer.png') });
 for (let i = 1; i <= 8; i++) {
   await page.locator(`.page-frame[data-page="${i}"]`).screenshot({ path: path.join(output, `page-${i}.png`) });
@@ -82,7 +91,7 @@ await page.waitForFunction(() => document.querySelector('#page-8').getBoundingCl
 summary.navigation = 'passed';
 await page.setViewportSize({ width: 390, height: 844 });
 await page.evaluate(() => document.documentElement.dataset.view='flipbook');
-await page.selectOption('#zoom', 'fit');
+await page.waitForFunction(() => document.querySelector('#zoom').value==='fit' && Math.abs(document.querySelector('.page-frame').getBoundingClientRect().width-(innerWidth-24))<.1);
 summary.mobile = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, viewport: innerWidth, canvasWidth: document.querySelector('.page-frame').getBoundingClientRect().width }));
 await page.screenshot({ path: path.join(output, 'mobile.png') });
 await page.emulateMedia({ media: 'print' });

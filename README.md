@@ -13,6 +13,8 @@ zoom, and Print / PDF. All assets and fonts are local.
 Desktop shows two pages per view; phones show one. Subtle side arrows, a page
 picker, and arrow keys turn pages. Phones support horizontal swipes and native
 pinch-to-zoom. The viewer keeps the brochure's original layout on every device.
+Desktop opens in Fit to screen, fitting the full spread to both the available
+width and height. The zoom selector still supports larger views.
 
 ## Deploy on Vercel
 
@@ -56,7 +58,11 @@ they can replace edited HTML. Edit the HTML and CSS directly instead.
 ## Print
 
 Use **Print / PDF** and enable background graphics in your browser if requested.
-The print styles preserve the source PDF's page dimensions and hide the viewer.
+All eight pages share a 1485 x 2235-point canvas (523.875 x 788.458 mm), the common
+interior size in the original PDF. The original cover was 40.5 points taller;
+its footer has been brought up to the common trim size. Screen and print use
+the same page proportions. Print styles hide the viewer and keep one brochure
+page per printed sheet, with no margins.
 
 
 Brand assets added from the website repository: boAt, Bombay Shaving Company,

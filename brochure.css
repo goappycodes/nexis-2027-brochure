@@ -48,6 +48,9 @@ button, select { font: inherit; }
 .viewer-controls .print-button { background: #ef3a5d; border-color: #ef3a5d; color: #fff; }
 .brochure { display: grid; justify-items: center; gap: 32px; padding: 32px 16px 56px; }
 .page-frame {
+  /* One shared canvas, matching the original PDF's common interior size. */
+  --page-width: 1485;
+  --page-height: 2235;
   position: relative;
   width: calc(var(--page-width) * var(--scale, .5) * 1px);
   height: calc(var(--page-height) * var(--scale, .5) * 1px);
@@ -211,12 +214,15 @@ button, select { font: inherit; }
   .brochure { gap: 18px; padding: 18px 12px 32px; }
 }
 @media print {
+  @page { size: 1485pt 2235pt; margin: 0; }
   :root { color-scheme: light; background: white; }
   body { background: white; margin: 0; }
-  .viewer-toolbar { display: none; }
+  .viewer-toolbar, .page-turn-controls, #page-announcement { display: none; }
   .brochure { display: block; padding: 0; }
   .page-frame {
     --scale: 1.3333333333 !important;
+    width: 1485pt;
+    height: 2235pt;
     margin: 0;
     box-shadow: none;
     break-after: page;

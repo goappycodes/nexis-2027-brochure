@@ -2,14 +2,22 @@
 (() => {
   const frames=[...document.querySelectorAll('.page-frame')], zoom=document.querySelector('#zoom'), navigation=document.querySelector('#page-select'), previous=document.querySelector('#previous-page'), next=document.querySelector('#next-page'), counter=document.querySelector('#spread-counter');
   const desktop=matchMedia('(min-width: 900px)'), reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  const main=document.querySelector('.brochure'), toolbar=document.querySelector('.viewer-toolbar');
   let current=1,touchStart;
   const spreadSize=()=>desktop.matches?2:1;
   const spreadStart=()=>Math.floor((current-1)/spreadSize())*spreadSize()+1;
   function resize() {
-    const columns=spreadSize(), available=Math.max(240,innerWidth-(columns===2?120:24)-(columns===2?16:0));
+    const columns=spreadSize();
     document.documentElement.dataset.spread=String(columns);
     if(!desktop.matches)zoom.value='fit';
-    frames.forEach(frame=>frame.style.setProperty('--scale',zoom.value==='fit'?Math.min(.5,available/(Number(frame.style.getPropertyValue('--page-width'))*columns)):Number(zoom.value)));
+    const layout=getComputedStyle(main), gap=columns===2?parseFloat(layout.columnGap):0;
+    const availableWidth=Math.max(1,innerWidth-(columns===2?120:24)-gap);
+    const availableHeight=Math.max(1,innerHeight-toolbar.getBoundingClientRect().height-parseFloat(layout.paddingTop)-parseFloat(layout.paddingBottom));
+    frames.forEach(frame=>{
+      const style=getComputedStyle(frame), width=Number(style.getPropertyValue('--page-width')), height=Number(style.getPropertyValue('--page-height'));
+      const fitScale=Math.min(availableWidth/(width*columns),desktop.matches?availableHeight/height:Infinity);
+      frame.style.setProperty('--scale',zoom.value==='fit'?fitScale:Number(zoom.value));
+    });
   }
   function updateNavigation() {
     const start=spreadStart(),end=Math.min(frames.length,start+spreadSize()-1);
@@ -31,7 +39,6 @@
     if(event.key==='ArrowRight'){event.preventDefault();goToPage(spreadStart()+spreadSize());}
     if(event.key==='ArrowLeft'){event.preventDefault();goToPage(spreadStart()-spreadSize());}
   });
-  const main=document.querySelector('.brochure');
   main.addEventListener('touchstart',event=>{touchStart=event.touches.length===1?{x:event.touches[0].clientX,y:event.touches[0].clientY}:null;},{passive:true});
   main.addEventListener('touchend',event=>{
     if(!touchStart||zoom.value!=='fit'||(window.visualViewport?.scale||1)>1.01)return;
@@ -47,5 +54,6 @@
     window.print();document.documentElement.dataset.view='flipbook';button.disabled=false;
   });
   window.addEventListener('beforeprint',()=>frames.forEach(frame=>frame.inert=false));window.addEventListener('afterprint',updateNavigation);
-  resize();updateNavigation();document.fonts.ready.then(()=>document.documentElement.dataset.ready='true');
+  new ResizeObserver(resize).observe(toolbar);
+  resize();updateNavigation();document.fonts.ready.then(()=>{resize();document.documentElement.dataset.ready='true';});
 })();
