@@ -1,0 +1,30 @@
+/* Only the viewer changes across screens; brochure pages retain their design. */
+@media screen {
+  .viewer-toolbar { min-height:60px;padding:10px 24px; }
+  .viewer-controls select,.viewer-controls button { min-height:40px; }
+  #page-select { max-width:290px; }
+  .spread-counter { min-width:65px;color:#a1a1aa;font-size:12px;text-align:center; }
+  html[data-view=flipbook] .brochure { position:relative;display:grid;grid-template-columns:repeat(2,max-content);justify-content:center;align-items:start;gap:16px;padding:24px 12px 40px; }
+  html[data-view=flipbook] .page-frame:not(.is-active) { position:absolute;left:-100000px;top:0;visibility:hidden;pointer-events:none; }
+  html[data-view=flipbook] .page-frame.is-active { animation:page-reveal .22s ease-out; }
+  .turn-arrow { position:fixed;top:50%;z-index:20;width:40px;height:48px;min-height:48px;padding:0;border:1px solid #ffffff18;border-radius:24px;background:#242427b8;backdrop-filter:blur(8px);color:#ddd;font-family:Arial,sans-serif;font-size:32px;font-weight:400;line-height:1;transform:translateY(-50%);transition:opacity .2s,background .2s;cursor:pointer; }
+  .turn-arrow-left { left:10px; }.turn-arrow-right { right:10px; }
+  .turn-arrow:hover { background:#353539;border-color:#ffffff35; }
+  .turn-arrow:disabled { opacity:.15;cursor:default; }
+  .turn-arrow:focus-visible { outline:2px solid #d5fe00;outline-offset:3px; }
+  .brochure { touch-action:pan-x pan-y pinch-zoom; }
+  @keyframes page-reveal { from { opacity:.55;transform:translateX(6px); } to { opacity:1;transform:none; } }
+}
+@media screen and (max-width:899px) {
+  html[data-view=flipbook] .brochure { grid-template-columns:max-content;gap:0;padding-top:16px; }
+  .viewer-toolbar { padding:10px 12px;flex-wrap:wrap;gap:8px; }
+  .viewer-brand { width:100%;justify-content:space-between; }
+  .viewer-brand span { font-size:9px; }
+  .viewer-controls { width:100%;justify-content:space-between; }
+  #page-select { flex:1;max-width:calc(100% - 75px);min-width:0; }
+  #zoom,#print { display:none; }
+  .turn-arrow { width:32px;height:44px;min-height:44px;background:#17171980;border-color:#ffffff12;font-size:27px; }
+  .turn-arrow-left { left:3px; }.turn-arrow-right { right:3px; }
+}
+@media (prefers-reduced-motion:reduce) { html[data-view=flipbook] .page-frame.is-active { animation:none; } }
+@media print { .page-frame { display:block !important; } }

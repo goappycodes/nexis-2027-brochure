@@ -26,3 +26,9 @@
   design. Do not restore their old individually positioned curriculum copy.
 - Three additional student slots intentionally reuse existing portraits and are
   marked `data-placeholder="true"` for future replacement.
+- Faculty names use Poppins 700 and sit below the logos without overlap.
+- Keep only the Flipbook view: two pages per view on desktop and one on mobile.
+  Use subtle side arrows and preserve native mobile pinch-to-zoom. Keep all
+  copy in the same semantic HTML and preserve the eight-page print layout.
+- `npm run build` creates static Vercel output in `dist/`. Keep generated output
+  and temporary verification files out of Git.

@@ -10,12 +10,26 @@ Run `npm run dev`, then open <http://127.0.0.1:4173>.
 There is no installation or build step. The viewer includes page navigation,
 zoom, and Print / PDF. All assets and fonts are local.
 
+Desktop shows two pages per view; phones show one. Subtle side arrows, a page
+picker, and arrow keys turn pages. Phones support horizontal swipes and native
+pinch-to-zoom. The viewer keeps the brochure's original layout on every device.
+
+## Deploy on Vercel
+
+Import this repository and select the `main` branch. The included `vercel.json`
+sets the static build to `npm run build` and the output directory to `dist`.
+There are no application dependencies or environment variables to configure.
+The build copies the HTML, styles, scripts, fonts, and artwork; development tools
+and the original reference PDF are excluded from the deployed site.
+
 ## Make edits
 
 - **Copy and content:** edit `index.html`. Each page has a `PAGE` comment.
   Paragraphs, lists, cards, and captions are normal HTML.
 - **Fonts and spacing:** edit `brochure.css`. Typography is shared by role;
   headings use Fraunces 400, body uses Poppins 400, and labels use Poppins 600.
+- **Flipbook controls:** edit `flipbook.css` and `brochure.js`. Their screen-only
+  rules control spreads, navigation, and touch behaviour.
 - **Positioning:** `.placed` blocks use `--x`, `--y`, and `--w` on a 1485-unit
   canvas. The shared text margin is 120 units. Move blocks as a whole.
 - **Artwork:** `assets/artwork/page-01.svg` through `page-08.svg` retain the
@@ -48,3 +62,9 @@ The print styles preserve the source PDF's page dimensions and hide the viewer.
 Brand assets added from the website repository: boAt, Bombay Shaving Company,
 and Snitch. Stable Money uses its official local SVG, sourced from
 https://assets.stablemoney.in/web-frontend/v1/stablemoney-black-textlogo.svg.
+
+Perfora and Salty wordmarks are from their official stores:
+https://perforacare.com/ and https://salty.co.in/.
+Curriculum tool icons use Simple Icons 11.14.0 from
+https://github.com/simple-icons/simple-icons/tree/11.14.0/icons.
+These tools illustrate the semester projects.

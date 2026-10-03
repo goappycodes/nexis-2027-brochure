@@ -7,8 +7,8 @@
   <title>NEXIS — 2027 Brochure</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="brochure.css">
-  <link rel="stylesheet" href="reader.css">
-  <script>document.documentElement.dataset.view = matchMedia("(max-width: 760px)").matches ? "reading" : "flipbook";</script>
+  <link rel="stylesheet" href="flipbook.css">
+  <script>document.documentElement.dataset.view = "flipbook";</script>
   <style>
 @page nexis1 { size: 1980px 3034px; margin: 0; }
 .page-frame[data-page="1"] { page: nexis1; }
@@ -35,8 +35,7 @@
 <strong>NEXIS</strong><span>2027 PROGRAMME BROCHURE</span>
 </div>
     <nav class="viewer-controls" aria-label="View options">
-      <select id="view-mode" aria-label="Reading mode"><option value="flipbook">Flipbook</option><option value="reading">Reading mode</option></select>
-      <button id="previous-page" type="button" aria-label="Previous page">←</button>
+
       <select id="page-select" aria-label="Go to page">
         <option value="1">1 / 8 · Cover</option>
         <option value="2">2 / 8 · Undergraduate courses</option>
@@ -47,16 +46,18 @@
         <option value="7">7 / 8 · Campus life</option>
         <option value="8">8 / 8 · Degree and admissions</option>
       </select>
-      <button id="next-page" type="button" aria-label="Next page">→</button>
+
       <select id="zoom" aria-label="Zoom">
         <option value="fit">Fit to screen</option>
         <option value="0.5">50%</option>
         <option value="0.75">75%</option>
         <option value="1">100%</option>
       </select>
+      <span id="spread-counter" class="spread-counter" aria-live="polite"></span>
       <button class="print-button" id="print" type="button">Print / PDF</button>
     </nav>
   </header>
+  <nav class="page-turn-controls" aria-label="Turn pages"><button class="turn-arrow turn-arrow-left" id="previous-page" type="button" aria-label="Previous pages">‹</button><button class="turn-arrow turn-arrow-right" id="next-page" type="button" aria-label="Next pages">›</button></nav>
   <p id="page-announcement" class="sr-only" aria-live="polite"></p>
   <main class="brochure" aria-label="NEXIS 2027 brochure">
     <!-- PAGE 1: Cover -->
@@ -65,7 +66,6 @@
         <object class="page-artwork" data="assets/artwork/page-01.svg" type="image/svg+xml" aria-hidden="true" tabindex="-1"></object>
         <div class="cover-shade" aria-hidden="true"></div>
         <div class="brochure-copy">
-          <div class="reading-cover-media"><img class="reading-logo" src="assets/images/nexis-logo-white.png" alt="NEXIS School of Business"><object data="assets/artwork/business-workshop.svg" type="image/svg+xml" aria-hidden="true" tabindex="-1"></object></div>
           <div class="placed on-dark" style="--x:120px;--y:870px;--w:1245px"><h1 class="cover-title">Industry Focused Business<br>&amp; Tech School,<span class="cover-tagline lime">Where You Graduate With Experience</span>
 </h1></div>
 <div class="placed on-dark" style="--x:120px;--y:1878px;--w:1245px">

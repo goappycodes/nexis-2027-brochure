@@ -17,6 +17,8 @@ page.on('response', response => { if (response.status() >= 400) errors.push(`${r
 await page.goto('http://127.0.0.1:4173', { waitUntil: 'networkidle' });
 await page.waitForSelector('html[data-ready="true"]');
 await page.evaluate(() => document.documentElement.dataset.view='pages');
+await page.waitForLoadState('networkidle');
+await page.waitForFunction(() => [...document.querySelectorAll('object')].every(object => object.contentDocument?.readyState==='complete'));
 await page.screenshot({ path: path.join(output, 'viewer.png') });
 for (let i = 1; i <= 8; i++) {
   await page.locator(`.page-frame[data-page="${i}"]`).screenshot({ path: path.join(output, `page-${i}.png`) });
@@ -74,11 +76,13 @@ const summary = await page.evaluate(() => ({
 }));
 await page.selectOption('#zoom', '0.75');
 summary.zoomWidth = await page.locator('.page-frame').first().evaluate(el => el.getBoundingClientRect().width);
+await page.evaluate(() => document.documentElement.dataset.view='flipbook');
 await page.selectOption('#page-select', '8');
 await page.waitForFunction(() => document.querySelector('#page-8').getBoundingClientRect().top < 200);
 summary.navigation = 'passed';
 await page.setViewportSize({ width: 390, height: 844 });
-await page.selectOption('#view-mode', 'reading');
+await page.evaluate(() => document.documentElement.dataset.view='flipbook');
+await page.selectOption('#zoom', 'fit');
 summary.mobile = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, viewport: innerWidth, canvasWidth: document.querySelector('.page-frame').getBoundingClientRect().width }));
 await page.screenshot({ path: path.join(output, 'mobile.png') });
 await page.emulateMedia({ media: 'print' });
