@@ -32,3 +32,6 @@
   copy in the same semantic HTML and preserve the eight-page print layout.
 - `npm run build` creates static Vercel output in `dist/`. Keep generated output
   and temporary verification files out of Git.
+- After completing brochure changes, commit and push directly to `main` on
+  `origin` (`https://github.com/goappycodes/nexis-2027-brochure`). The user has
+  authorized these routine pushes; do not ask for confirmation again.
