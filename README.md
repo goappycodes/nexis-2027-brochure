@@ -54,6 +54,8 @@ naturally; there is no letter-by-letter positioning or horizontal text stretch.
 The scripts in `tools/` were used for the initial PDF migration and verification.
 Do not rerun the extraction/build/refinement scripts for normal content edits:
 they can replace edited HTML. Edit the HTML and CSS directly instead.
+The `build` and `export:print` npm scripts only write output files and do not
+overwrite the brochure source.
 
 ## Print
 
@@ -63,6 +65,18 @@ interior size in the original PDF. The original cover was 40.5 points taller;
 its footer has been brought up to the common trim size. Screen and print use
 the same page proportions. Print styles hide the viewer and keep one brochure
 page per printed sheet, with no margins.
+
+For the print PDF, keep the development server running and run
+`npm run export:print`. It writes `output/pdf/nexis-2027-print.pdf`, verifies
+all eight page boxes at exactly 1485 x 2235 points, and renders transparent
+artwork panels at 300 dpi to prevent browser PDF mask artifacts. HTML text
+remains vector text. Generated PDFs stay out of Git.
+
+The optional export tooling requires Playwright, Chrome, Python, and `pypdf`;
+it uses this workspace's installed runtimes by default. Set
+`PLAYWRIGHT_PACKAGE_PATH`, `CHROME_PATH`, and `PYTHON_PATH` for other runtimes,
+or `BROCHURE_URL` to export from another local server. These dependencies are
+not required by the deployed flipbook or the static build.
 
 
 Brand assets added from the website repository: boAt, Bombay Shaving Company,

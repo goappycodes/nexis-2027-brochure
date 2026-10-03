@@ -5,6 +5,7 @@
   "description": "Editable HTML reconstruction of the eight-page NEXIS brochure",
   "scripts": {
     "build": "node tools/build.mjs",
+    "export:print": "node tools/export-print.mjs",
     "dev": "node tools/serve.mjs",
     "start": "node tools/serve.mjs"
   }
