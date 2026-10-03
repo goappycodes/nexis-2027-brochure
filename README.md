@@ -84,11 +84,17 @@ After creating the print master, run `npm run export:mobile`. It writes
 `output/pdf/nexis-2027-mobile.pdf`, a fully flattened, eight-page PDF that opens
 with one page fitted to the viewer. All page dimensions match the print master.
 
-Pages render at 240 dpi (4950 x 7450 pixels) and use lossless RGB compression.
-The exporter checks every final page against the source rendered at the same
-resolution, requiring identical pixels. Photos, logos, and text are baked into
-each page; the PDF has no editable layers or searchable text. Flattening fixes
-the resolution, so keep the vector print master for printing or extreme zoom.
+Pages render at 240 dpi (4950 x 7450 pixels). The exporter selects the highest
+JPEG quality between 90 and 98 that keeps the complete PDF within 25 MB,
+without resizing pages or subsampling color. It checks the actual file size,
+page boxes, pixel dimensions, and image quality before replacing the output.
+This sharing compression is lossy; the print master retains the source quality.
+Photos, logos, and text are baked into each page, with no editable layers or
+searchable text. Keep the vector print master for printing or extreme zoom.
+
+For the larger lossless version, run
+`npm run export:mobile -- --compression lossless --max-mb 0`.
+That mode requires pixel-identical output at the export resolution.
 
 The optional Python exporter requires `PyMuPDF`, `Pillow`, and `pypdf`. It does
 not change the HTML flipbook or its deployment. Generated PDFs and review files
