@@ -1,0 +1,11 @@
+{
+  "name": "nexis-2027-brochure",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Editable HTML reconstruction of the eight-page NEXIS brochure",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "dev": "node tools/serve.mjs",
+    "start": "node tools/serve.mjs"
+  }
+}

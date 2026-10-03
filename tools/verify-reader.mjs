@@ -1,0 +1,41 @@
+import { createRequire } from 'node:module';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
+const require=createRequire(process.env.PLAYWRIGHT_PACKAGE_PATH||'C:/Users/rites/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json');
+const {chromium}=require('playwright');
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'), output=path.join(root,'tmp','verification');
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+const errors=[],report={};
+const page=await browser.newPage({viewport:{width:1100,height:1450}});
+page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`);});
+await page.goto('http://127.0.0.1:4173',{waitUntil:'networkidle'});await page.waitForSelector('html[data-ready=true]');
+assert.equal(await page.locator('.page-frame:visible').count(),1);
+assert.equal(await page.locator('#view-mode').inputValue(),'flipbook');
+await page.locator('#next-page').click();assert.equal(await page.locator('#page-select').inputValue(),'2');
+await page.locator('#previous-page').click();assert.equal(await page.locator('#page-select').inputValue(),'1');
+await page.evaluate(()=>document.activeElement.blur());await page.keyboard.press('ArrowRight');assert.equal(await page.locator('#page-select').inputValue(),'2');
+await page.selectOption('#page-select','8');assert.equal(await page.locator('#next-page').isDisabled(),true);
+report.desktop='Page buttons, page picker, keyboard, and end boundaries passed';
+await page.selectOption('#view-mode','reading');
+assert.equal(await page.locator('.page-frame:visible').count(),8);
+for(const width of [320,390,430,768,1100]) {
+  await page.setViewportSize({width,height:844});await page.evaluate(()=>scrollTo(0,0));
+  const checks=await page.evaluate(()=>{
+    const overflowing=[...document.querySelectorAll('.brochure-copy p,.business-course-list li,.dual-tool-logos,.faculty-card,.founder-card')].filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>({text:el.textContent.slice(0,90),width:el.clientWidth,scroll:el.scrollWidth}));
+    return {viewport:innerWidth,documentWidth:document.documentElement.scrollWidth,bodySize:getComputedStyle(document.querySelector('.compact-copy')).fontSize,overflowing};
+  });
+  report[width]=checks;
+  await page.screenshot({path:path.join(output,`reading-${width}.png`)});
+  if(width===390)for(const number of [2,4,5,6,7,8])await page.locator(`#page-${number}`).screenshot({path:path.join(output,`reading-page-${number}.png`)});
+}
+await page.setViewportSize({width:390,height:844});await page.reload({waitUntil:'networkidle'});assert.equal(await page.locator('#view-mode').inputValue(),'reading');
+report.mobileDefault='Reading mode';
+await page.selectOption('#view-mode','flipbook');assert.equal(await page.locator('.page-frame:visible').count(),1);
+await page.locator('#next-page').click();assert.equal(await page.locator('#page-select').inputValue(),'2');
+report.mobileFlipbook='Passed';
+report.errors=errors;fs.writeFileSync(path.join(output,'reader-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+await browser.close();
+assert.deepEqual(errors,[]);
+assert.equal(Object.values(report).filter(x=>x&&typeof x==='object'&&x.viewport).every(x=>x.documentWidth===x.viewport&&x.overflowing.length===0),true);
