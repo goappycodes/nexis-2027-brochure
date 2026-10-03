@@ -54,8 +54,8 @@ naturally; there is no letter-by-letter positioning or horizontal text stretch.
 The scripts in `tools/` were used for the initial PDF migration and verification.
 Do not rerun the extraction/build/refinement scripts for normal content edits:
 they can replace edited HTML. Edit the HTML and CSS directly instead.
-The `build` and `export:print` npm scripts only write output files and do not
-overwrite the brochure source.
+The `build`, `export:print`, and `export:mobile` npm scripts only write output
+files and do not overwrite the brochure source.
 
 ## Print
 
@@ -77,6 +77,22 @@ it uses this workspace's installed runtimes by default. Set
 `PLAYWRIGHT_PACKAGE_PATH`, `CHROME_PATH`, and `PYTHON_PATH` for other runtimes,
 or `BROCHURE_URL` to export from another local server. These dependencies are
 not required by the deployed flipbook or the static build.
+
+## Mobile sharing PDF
+
+After creating the print master, run `npm run export:mobile`. It writes
+`output/pdf/nexis-2027-mobile.pdf`, a fully flattened, eight-page PDF that opens
+with one page fitted to the viewer. All page dimensions match the print master.
+
+Pages render at 240 dpi (4950 x 7450 pixels) and use lossless RGB compression.
+The exporter checks every final page against the source rendered at the same
+resolution, requiring identical pixels. Photos, logos, and text are baked into
+each page; the PDF has no editable layers or searchable text. Flattening fixes
+the resolution, so keep the vector print master for printing or extreme zoom.
+
+The optional Python exporter requires `PyMuPDF`, `Pillow`, and `pypdf`. It does
+not change the HTML flipbook or its deployment. Generated PDFs and review files
+stay out of Git.
 
 
 Brand assets added from the website repository: boAt, Bombay Shaving Company,
