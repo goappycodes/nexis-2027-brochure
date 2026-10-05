@@ -1,369 +1,1599 @@
-/* The brochure uses the original fixed canvas, scaled as a whole for viewing.
-   Edit individual positions in index.html; artwork remains sharp at any zoom. */
+/* NEXIS editorial prospectus. One shared canvas for screen and print. */
 @import url("fonts.css");
 
 :root {
   color-scheme: dark;
-  font-family: "Poppins", system-ui, sans-serif;
-  --fraunces-variation: "opsz" 136, "SOFT" 40, "WONK" 1;
-  font-feature-settings: "kern", "liga", "ss01";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  background: #19191b;
-  color: #f4f4f5;
+  font-family:"Poppins",system-ui,sans-serif;
+  --fraunces-variation:"opsz" 136,"SOFT" 40,"WONK" 1;
+  --ink:#183f35;
+  --paper:#f5f1e8;
+  --coral:#c94835;
+  --muted:#66756b;
+  --rule:#d0d5c8;
+  font-feature-settings:"kern","liga","ss01";
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  background:#15231f;
+  color:#f5f1e8
 }
-* { box-sizing: border-box; }
-body { margin: 0; }
-button, select { font: inherit; }
+
+
+* {
+  box-sizing:border-box
+}
+
+body {
+  margin:0
+}
+
+button,select {
+  font:inherit
+}
+
+
 .viewer-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  min-height: 64px;
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  background: #202023f5;
-  border-bottom: 1px solid #38383d;
-  backdrop-filter: blur(12px);
+  position:sticky;
+  top:0;
+  z-index:10;
+  min-height:64px;
+  padding:12px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  background:#15231ff5;
+  border-bottom:1px solid #ffffff20;
+  backdrop-filter:blur(12px)
 }
-.viewer-brand { display: flex; align-items: baseline; gap: 14px; }
-.viewer-brand strong { font-size: 17px; letter-spacing: .12em; }
-.viewer-brand span { color: #a1a1aa; font-size: 12px; }
-.viewer-controls { display: flex; gap: 8px; align-items: center; }
-.viewer-controls select, .viewer-controls button {
-  color: #eee;
-  background: #2c2c31;
-  border: 1px solid #47474f;
-  border-radius: 6px;
-  min-height: 36px;
-  padding: 7px 12px;
-  cursor: pointer;
+
+
+.viewer-brand {
+  display:flex;
+  align-items:baseline;
+  gap:14px
 }
-.viewer-controls button:hover, .viewer-controls select:hover { border-color: #ef3a5d; }
-.viewer-controls :focus-visible { outline: 2px solid #e8ff00; outline-offset: 3px; }
-.viewer-controls .print-button { background: #ef3a5d; border-color: #ef3a5d; color: #fff; }
-.brochure { display: grid; justify-items: center; gap: 32px; padding: 32px 16px 56px; }
+
+.viewer-brand strong {
+  font-size:17px;
+  letter-spacing:.12em
+}
+
+.viewer-brand span {
+  color:#b4c2b8;
+  font-size:12px
+}
+
+.viewer-controls {
+  display:flex;
+  gap:8px;
+  align-items:center
+}
+
+.viewer-controls select,.viewer-controls button {
+  color:#f5f1e8;
+  background:#20372e;
+  border:1px solid #ffffff25;
+  border-radius:4px;
+  min-height:36px;
+  padding:7px 12px;
+  cursor:pointer
+}
+
+.viewer-controls button:hover,.viewer-controls select:hover {
+  border-color:#da8066
+}
+
+.viewer-controls :focus-visible {
+  outline:2px solid #ebc67c;
+  outline-offset:3px
+}
+
+.viewer-controls .print-button {
+  background:#e6c58f;
+  border-color:#e6c58f;
+  color:#183f35
+}
+
+
+.brochure {
+  display:grid;
+  justify-items:center;
+  gap:32px;
+  padding:32px 16px 56px
+}
+
 .page-frame {
-  /* One shared canvas, matching the original PDF's common interior size. */
-  --page-width: 1485;
-  --page-height: 2235;
-  position: relative;
-  width: calc(var(--page-width) * var(--scale, .5) * 1px);
-  height: calc(var(--page-height) * var(--scale, .5) * 1px);
-  background: #fff;
-  box-shadow: 0 12px 40px #0006;
-  scroll-margin-top: 90px;
-  overflow: hidden;
-  color-scheme: light;
+  --page-width:1485;
+  --page-height:2235;
+  position:relative;
+  width:calc(var(--page-width)*var(--scale,.5)*1px);
+  height:calc(var(--page-height)*var(--scale,.5)*1px);
+  background:var(--paper);
+  box-shadow:0 12px 40px #0005;
+  scroll-margin-top:90px;
+  overflow:hidden;
+  color-scheme:light
 }
+
 .brochure-page {
-  position: absolute;
-  width: calc(var(--page-width) * 1px);
-  height: calc(var(--page-height) * 1px);
-  transform: scale(var(--scale, .5));
-  transform-origin: top left;
-  background: #fff;
+  position:absolute;
+  width:calc(var(--page-width)*1px);
+  height:calc(var(--page-height)*1px);
+  transform:scale(var(--scale,.5));
+  transform-origin:top left;
+  background:var(--paper);
+  color:var(--ink)
 }
-.page-artwork, .brochure-copy { position: absolute; inset: 0; width: 100%; height: 100%; }
-.page-artwork { pointer-events: none; border: 0; }
+
+
 .brochure-copy {
-  --gutter: 120px;
-  --body-size: 26px;
-  --caption-size: 22px;
-  --body-leading: 1.4;
-  --heading-leading: 1.08;
-  pointer-events: none;
-  color: #111;
-  font: 400 var(--body-size)/var(--body-leading) "Poppins", system-ui, sans-serif;
-  letter-spacing: normal;
-  font-kerning: normal;
-  font-feature-settings: "kern", "liga", "ss01";
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  --gutter:120px;
+  --body-size:26px;
+  --caption-size:22px;
+  --body-leading:1.4;
+  --heading-leading:1.08;
+  color:var(--ink);
+  font:400 var(--body-size)/var(--body-leading) "Poppins",system-ui,sans-serif;
+  letter-spacing:normal;
+  font-kerning:normal;
+  font-feature-settings:"kern","liga","ss01"
 }
-.brochure-copy :is(h1,h2,h3,h4,p,ul) { margin: 0; }
-.brochure-copy :is(h1,h2,h3,h4), .seat-number, .course-index, .stat-number, .programme-number, .admission-number {
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 400;
-  font-variation-settings: var(--fraunces-variation);
-  letter-spacing: normal;
-  -webkit-text-stroke: .12px currentColor;
+
+
+.brochure-copy :is(h1,h2,h3,h4,p,ul) {
+  margin:0
 }
-.brochure-copy :is(h1,h2,h3,h4) { line-height: var(--heading-leading); }
-.brochure-copy em { font-style: italic; }
+
+.brochure-copy :is(h1,h2,h3,h4),.seat-number,.course-index,.admission-number,.business-project-number,.dual-programme-number,.business-number {
+  font-family:"Fraunces",Georgia,serif;
+  font-weight:400;
+  font-variation-settings:var(--fraunces-variation);
+  letter-spacing:normal
+}
+
+.brochure-copy :is(h1,h2,h3,h4) {
+  line-height:var(--heading-leading)
+}
+
+.brochure-copy em {
+  font-style:italic
+}
+
 .placed {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: var(--w);
-  pointer-events: auto;
+  position:absolute;
+  left:120px;
+  width:1245px
 }
-.on-dark { color: #fff; }
-.crimson { color: #ef3a5d; }
-.lime { color: #d5fe00; }
-.centered { text-align: center; }
-.body-copy { font-size: var(--body-size); line-height: var(--body-leading); }
-.cover-title { font-size: 112px; line-height: 1.13 !important; }
-.cover-tagline { display: block; font-size: 70px; line-height: 1.15; white-space: nowrap; margin-top: 24px; }
-.cover-facts { display: grid; grid-template-columns: repeat(3,1fr); gap: 60px; text-align: center; }
-.fact-label { font-size: 34px; font-weight: 600; line-height: 1.2; }
-.fact-value { margin-top: 36px !important; font-size: 36px; line-height: 1.35; }
-.display-title { font-size: 116px; line-height: 1.1 !important; }
-.seat-badge { text-align: right; }
-.seat-label { font-size: 26px; line-height: 1.3; font-weight: 500; }
-.seat-number { font-size: 146px; line-height: 1.12; }
-.overview-grid { display: grid; grid-template-columns: repeat(3,1fr); border-top: 2px solid #000; }
-.overview-course { padding: 30px 24px 0; }
-.overview-course:first-child { padding-left: 0; }
-.overview-course + .overview-course { border-left: 2px solid #111; }
-.course-index { font-size: 38px; line-height: 1; }
-.overview-course h3 { font-size: 43px; line-height: 1.15; margin-top: 22px; min-height: 110px; }
-.overview-course h3.course-title-marketing { font-size: 34px; }
-.course-title-marketing > span { white-space: nowrap; }
-.compact-copy { font-size: 24px; line-height: 1.4; }
-.backing-panel { height: 190.24px; padding: 0; background: white; color: #111; display: grid; grid-template-rows: 58.24px 120px; gap: 12px; }
-.backing-artwork { display: block; width: 1010px; height: 120px; border: 0; justify-self: center; pointer-events: none; }
-.panel-intro { font-size: 52px; line-height: 1.12 !important; }
-.alumni-heading { height: 160px; }
-.alumni-title { position: absolute; top: 20px; right: 0; font-family: "Fraunces", Georgia, serif; font-variation-settings: var(--fraunces-variation); font-size: 94px; line-height: 1.1; text-align: right; margin-top: 0 !important; }
-.founder-label, .founder-role { font-size: 28px; line-height: 1.4; }
-.founder-label { font-weight: 500; }
-.credential-stack { font-size: 22px; line-height: 1.4; display: grid; gap: 10px; }
-.caption-name, .achievement-name { font-size: var(--caption-size); font-weight: 500; line-height: 1.3; }
-.caption-detail, .achievement-detail { font-size: 20px; line-height: 1.4; margin-top: 6px !important; }
-.page-kicker { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: .08em; }
-.section-title { font-size: 104px; margin-top: 22px !important; line-height: 1.1 !important; }
-.section-title em { font-size: 136px; }
-.faculty-caption { text-align: center; }
-.faculty-name { font-size: 24px; font-weight: 500; line-height: 1.25; }
-.faculty-role { font-size: 18px; line-height: 1.35; margin-top: 4px !important; }
-.faculty-panel { position: absolute; left: 0; top: 395px; width: 1485px; height: 1745px; padding: 20px 120px 0; background: white; pointer-events: auto; }
-.faculty-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px 15px; }
-.faculty-card { position: relative; width: 300px; height: 394px; justify-self: center; }
-.faculty-artwork { display: block; width: 300px; height: 394px; border: 0; pointer-events: none; }
-.faculty-card-copy { position: absolute; top: 78px; left: 8px; right: 8px; text-align: center; }
-.faculty-card .faculty-name { font-size: 22px; font-weight: 700; line-height: 1.25; }
-.faculty-card .faculty-role { font-size: 15px; line-height: 1.3; }
-.faculty-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; }
-.faculty-stats > div { display: flex; gap: 22px; align-items: center; }
-.stat-number { font-size: 110px; line-height: 1; }
-.faculty-stats p { font-size: 30px; line-height: 1.25; }
-.annual-masterclasses { text-align: center; font-size: 34px; line-height: 1.4; }
-.curriculum-title { font-size: 124px; line-height: 1.1 !important; }
-.curriculum-title > span { display: block; font-size: 88px; margin-bottom: 16px; }
-.curriculum-title em { display: block; }
-.programme-title { display: flex; gap: 42px; align-items: center; }
-.programme-number { font-size: 120px; line-height: 1; flex: 0 0 138px; }
-.programme-title h2 { font-size: 66px; line-height: 1.12; }
-.programme-title.stacked { align-items: flex-start; gap: 34px; }
-.programme-title.stacked h2 { font-size: 64px; line-height: 1.1; }
-.programme-title.stacked .programme-number { padding-top: 18px; }
-.tag { display: inline-block; padding: 13px 22px; border-radius: 14px; font-size: 26px; line-height: 1.2; font-weight: 600; }
-.tag-dark { background: #111; color: white; }
-.tag-crimson { background: #ef3a5d; color: white; }
-.tag-lime { background: #d5fe00; color: #111; }
-.tag-white { background: white; color: #111; }
-.course-list { padding-left: 26px; font-size: 24px; line-height: 1.4; color: #666; }
-.course-list li { padding-left: 3px; }
-.on-dark .course-list { color: white; }
-.eyebrow { font-size: 24px; font-weight: 600; letter-spacing: .06em; line-height: 1.2; text-transform: uppercase; }
-.project-title { font-size: 33px; line-height: 1.18 !important; margin-top: 16px !important; }
-.project .body-copy { color: #666; margin-top: 18px; }
-.project.on-dark .body-copy { color: white; }
-.internship-title { font-size: 84px; white-space: nowrap; line-height: 1.08 !important; }
-.brand-tagline { font-size: 34px; line-height: 1.15 !important; }
-.small-section-title { font-size: 42px; line-height: 1.15 !important; }
-.profile-title { font-size: 52px; line-height: 1.1 !important; }
-.profile-label { font-size: 26px; margin-top: 10px !important; }
-.campus-title { font-size: 112px; line-height: 1.1 !important; margin-top: 24px !important; }
-.activity-caption { text-align: center; font-size: 22px; line-height: 1.3; }
-.campus-intro { font-size: 30px; line-height: 1.4; border-left: 14px solid #d5fe00; padding-left: 32px; }
-.vertical-label { position: absolute; left: var(--x); top: var(--y); width: 90px; height: 302.25px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 500; line-height: 1.2; }
-.vertical-label > span { display: block; white-space: nowrap; transform: rotate(-90deg); }
-.degree-title { font-size: 112px; line-height: 1.08 !important; }
-.degree-copy { display: grid; gap: 34px; }
-.degree-note { font-size: 21px; line-height: 1.35; }
-.admissions-panel { position: absolute; top: 949.5px; left: 0; width: 1485px; height: 684px; background: white; padding: 54px var(--gutter) 40px; pointer-events: auto; }
-.admissions-title { font-size: 106px; line-height: 1.08 !important; }
-.admissions-intro { font-size: 24px; line-height: 1.4; margin-top: 18px !important; }
-.admissions-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 36px; margin-top: 34px; }
-.admission-card { height: 366px; border: 5px solid #111; border-radius: 40px; padding: 20px 26px; box-shadow: 10px 8px 0 #ef3a5d; }
-.admission-card:nth-child(2) { box-shadow: 10px 8px 0 #d5fe00; }
-.admission-number { font-size: 56px; line-height: 1; }
-.admission-card .eyebrow { margin-top: 6px; }
-.admission-card h3 { font-size: 30px; line-height: 1.15; margin-top: 16px; min-height: 68px; }
-.admission-card > p:last-child { font-size: 21px; line-height: 1.35; margin-top: 14px; }
-.contact-panel { position: absolute; top: 1633.5px; left: 0; width: 1485px; height: 518.25px; background: black; padding: 48px var(--gutter); pointer-events: auto; }
-.contact-panel > h2 { font-size: 42px; line-height: 1.15; }
-.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; margin-top: 24px; }
-.contact-stack { display: grid; align-content: start; gap: 20px; }
-.contact-stack h3 { font-family: "Poppins", system-ui, sans-serif; font-size: 24px; font-weight: 600; line-height: 1.2; letter-spacing: .06em; text-transform: uppercase; color: #ef3a5d; -webkit-text-stroke: 0; }
-.contact-stack p { font-size: 26px; line-height: 1.4; margin-top: 8px; }
-.contact-panel a { color: inherit; text-decoration: none; }
-.contact-panel a:hover { text-decoration: underline; }
-.contact-panel .follow-title { font-size: 32px; margin-top: 24px; }
-.social-row { display: flex; justify-content: space-between; gap: 32px; font-size: 22px; line-height: 1.4; margin-top: 16px; }
-.social-row b { display: inline-flex; min-width: 22px; justify-content: center; margin-right: 4px; font-weight: 600; }
-@media (max-width: 650px) {
-  .viewer-toolbar { padding: 12px; flex-wrap: wrap; gap: 12px; }
-  .viewer-brand { width: 100%; }
-  .viewer-controls { width: 100%; }
-  .viewer-controls select { flex: 1; min-width: 0; }
-  .brochure { gap: 18px; padding: 18px 12px 32px; }
+
+.crimson {
+  color:var(--coral)
 }
+
+.lime {
+  color:#e6c58f
+}
+
+.on-dark {
+  color:var(--paper)
+}
+
+.centered {
+  text-align:center
+}
+
+.body-copy {
+  font-size:26px;
+  line-height:1.4
+}
+
+object {
+  border:0;
+  pointer-events:none
+}
+
+img {
+  max-width:100%
+}
+
+
+.page-masthead {
+  position:absolute;
+  z-index:2;
+  left:120px;
+  right:120px;
+  top:66px;
+  height:106px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--rule);
+  padding-bottom:24px
+}
+
+.page-masthead img {
+  width:210px;
+  height:81px;
+  filter:none
+}
+
+.page-masthead p {
+  font-size:19px;
+  font-weight:600;
+  letter-spacing:.07em;
+  text-transform:uppercase
+}
+
+.page-folio {
+  position:absolute;
+  left:120px;
+  right:120px;
+  bottom:58px;
+  border-top:1px solid var(--rule);
+  padding-top:22px;
+  display:flex;
+  justify-content:space-between;
+  font-size:18px;
+  font-weight:500;
+  letter-spacing:.04em
+}
+
+.page-folio span:last-child {
+  color:var(--coral)
+}
+
+
+.eyebrow,.page-kicker {
+  font-size:22px;
+  font-weight:600;
+  line-height:1.2;
+  letter-spacing:.06em;
+  text-transform:uppercase
+}
+
+
+/* Cover: a clear promise, a panoramic classroom, and the full student-life sequence. */
+#page-1,#page-7,#page-8 {
+  background:var(--ink);
+  color:var(--paper)
+}
+
+#page-1 .page-masthead,#page-7 .page-masthead,#page-8 .page-masthead {
+  border-color:#ffffff40
+}
+
+#page-1 .page-masthead img,#page-7 .page-masthead img,#page-8 .page-masthead img {
+  filter:none
+}
+
+#page-1 .page-folio,#page-7 .page-folio,#page-8 .page-folio {
+  border-color:#ffffff40
+}
+
+#page-1 .page-folio span:last-child,#page-7 .page-folio span:last-child,#page-8 .page-folio span:last-child {
+  color:#e6c58f
+}
+
+
+.cover-heading {
+  top:267px
+}
+
+.cover-title {
+  font-size:126px;
+  line-height:1.08!important;
+  max-width:1245px
+}
+
+.cover-tagline {
+  display:block;
+  font-size:65px;
+  line-height:1.15;
+  white-space:nowrap;
+  margin-top:34px;
+  color:#e6c58f
+}
+
+.cover-photography {
+  position:absolute;
+  left:120px;
+  top:780px;
+  width:1245px;
+  height:970px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:664px 280px;
+  gap:26px 18px
+}
+
+.cover-photography figure {
+  margin:0;
+  overflow:hidden
+}
+
+.cover-photography figure:first-child {
+  grid-column:1/-1;
+  position:relative
+}
+
+.cover-photography figure:first-child::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  border:1px solid #ffffff30
+}
+
+.cover-photography img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+
+.cover-photography figure:first-child img {
+  object-position:center 50%
+}
+
+.cover-details {
+  top:1850px
+}
+
+.cover-facts {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:48px;
+  border-top:1px solid #ffffff50;
+  padding-top:38px
+}
+
+.cover-facts>div+div {
+  border-left:1px solid #ffffff35;
+  padding-left:48px
+}
+
+.fact-label {
+  font-size:23px;
+  font-weight:600;
+  line-height:1.2;
+  color:#e6c58f
+}
+
+.fact-value {
+  margin-top:18px!important;
+  font-size:30px;
+  line-height:1.35
+}
+
+
+/* Programmes and founders: a compact index followed by the people behind it. */
+.overview-heading {
+  top:250px;
+  width:925px
+}
+
+.display-title {
+  font-size:100px;
+  line-height:1.04!important
+}
+
+.seat-badge {
+  left:auto;
+  right:120px;
+  top:253px;
+  width:240px;
+  padding:25px 20px;
+  background:var(--ink);
+  color:var(--paper);
+  text-align:center
+}
+
+.seat-label {
+  font-size:22px;
+  line-height:1.3;
+  font-weight:500
+}
+
+.seat-number {
+  font-size:120px;
+  line-height:1.05;
+  color:#e6c58f
+}
+
+.overview-courses {
+  top:644px
+}
+
+.overview-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:36px
+}
+
+.overview-course {
+  padding:24px 0 0;
+  border-top:2px solid var(--ink)
+}
+
+.course-index {
+  font-size:63px;
+  line-height:1
+}
+
+.overview-course h3 {
+  font-size:41px;
+  line-height:1.15;
+  margin-top:18px;
+  min-height:110px
+}
+
+.overview-course h3.course-title-marketing {
+  font-size:34px
+}
+
+.compact-copy {
+  font-size:24px;
+  line-height:1.4;
+  margin-top:20px!important
+}
+
+.course-title-marketing>span {
+  white-space:normal
+}
+
+.alumni-panel {
+  position:absolute;
+  left:120px;
+  top:1100px;
+  width:1245px;
+  height:833px;
+  color:var(--ink);
+  border-top:1px solid var(--rule);
+  padding-top:38px
+}
+
+.alumni-panel-heading {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:20px
+}
+
+.alumni-panel-heading h2 {
+  font-size:48px
+}
+
+.alumni-panel-heading>p {
+  font-family:Fraunces,Georgia,serif;
+  font-variation-settings:var(--fraunces-variation);
+  font-size:62px;
+  line-height:1.1
+}
+
+.alumni-panel-heading .lime {
+  color:var(--coral)
+}
+
+.university-artwork {
+  position:absolute;
+  right:0;
+  top:133px;
+  width:610px;
+  height:106px;
+  background:var(--ink);
+  padding:8px 20px
+}
+
+.founder-grid {
+  position:absolute;
+  left:0;
+  right:0;
+  top:276px;
+  height:555px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:36px
+}
+
+.founder-card {
+  position:relative;
+  overflow:hidden;
+  background:#e7e9df;
+  color:var(--ink);
+  border-top:3px solid var(--ink)
+}
+
+.founder-artwork {
+  position:absolute;
+  right:0;
+  bottom:0;
+  display:block;
+  width:310px;
+  height:340px
+}
+
+.founder-card-copy {
+  position:absolute;
+  left:30px;
+  right:28px;
+  top:28px
+}
+
+.founder-label {
+  font-size:19px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--coral)
+}
+
+.founder-role {
+  font-size:23px;
+  line-height:1.4;
+  margin-top:8px!important;
+  max-width:285px
+}
+
+.credential-stack {
+  font-size:20px;
+  line-height:1.4;
+  display:grid;
+  gap:8px;
+  margin-top:28px!important
+}
+
+.founder-name {
+  position:absolute;
+  left:30px;
+  bottom:25px;
+  font-size:25px;
+  font-weight:500;
+  background:var(--ink);
+  color:var(--paper);
+  padding:8px 14px;
+  z-index:1
+}
+
+.backing-panel {
+  top:1990px;
+  display:grid;
+  grid-template-columns:420px 1fr;
+  align-items:center;
+  gap:24px;
+  background:#fff;
+  padding:14px 24px;
+  height:125px
+}
+
+.panel-intro {
+  font-size:34px;
+  line-height:1.12!important;
+  text-align:left
+}
+
+.backing-artwork {
+  width:100%;
+  height:95px
+}
+
+
+/* Faculty: portrait, affiliation, and name in a quiet four-by-four gallery. */
+.faculty-heading {
+  top:250px
+}
+
+.section-title {
+  font-size:91px;
+  margin-top:26px!important;
+  line-height:1.1!important
+}
+
+.section-title em {
+  font-size:115px
+}
+
+.faculty-panel {
+  position:absolute;
+  left:120px;
+  top:607px;
+  width:1245px
+}
+
+.faculty-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(4,360px);
+  gap:24px 20px
+}
+
+.faculty-card {
+  position:relative;
+  min-width:0;
+  display:grid;
+  grid-template-rows:215px 59px 86px;
+  background:#e7e9df
+}
+
+.faculty-artwork {
+  display:block;
+  width:100%;
+  height:215px;
+  object-fit:contain
+}
+
+.faculty-company {
+  width:100%;
+  height:59px;
+  background:#fff;
+  padding:4px 16px
+}
+
+.faculty-card-copy {
+  text-align:left;
+  padding:10px 14px;
+  background:var(--paper)
+}
+
+.faculty-name {
+  font-size:21px;
+  font-weight:700;
+  line-height:1.25
+}
+
+.faculty-role {
+  font-size:15px;
+  line-height:1.3;
+  margin-top:4px!important;
+  color:#485c50
+}
+
+
+/* Programme system: generous foundations and a sequential project studio. */
+.business-header {
+  position:absolute;
+  left:120px;
+  top:246px;
+  width:1245px;
+  border-bottom:1px solid var(--rule);
+  padding-bottom:36px
+}
+
+.business-header h1 {
+  font-size:100px;
+  line-height:1.08;
+  margin-top:26px
+}
+
+.business-subtitle {
+  font-size:26px;
+  line-height:1.4;
+  margin-top:22px!important
+}
+
+.business-number {
+  position:absolute;
+  right:0;
+  top:10px;
+  color:#c6cebc;
+  font-size:206px;
+  line-height:1
+}
+
+.business-column-labels {
+  position:absolute;
+  left:120px;
+  top:636px;
+  width:1245px;
+  display:grid;
+  grid-template-columns:530px 679px;
+  gap:36px
+}
+
+.business-column-labels span,.dual-column-labels span {
+  display:block;
+  font-size:22px;
+  line-height:1.4;
+  font-weight:400;
+  letter-spacing:normal;
+  text-transform:none;
+  margin-top:9px
+}
+
+.business-learning-layout {
+  position:absolute;
+  left:120px;
+  top:724px;
+  width:1245px;
+  height:1356px;
+  display:grid;
+  grid-template-columns:530px 679px;
+  gap:36px
+}
+
+.business-course-groups {
+  display:grid;
+  grid-template-rows:664px 488px 156px;
+  gap:24px
+}
+
+.business-course-card {
+  background:#e9ebdf;
+  border:0;
+  border-top:3px solid var(--ink);
+  padding:28px 28px;
+  overflow:hidden
+}
+
+.business-course-card h2 {
+  font-size:42px;
+  line-height:1.1
+}
+
+.business-card-intro {
+  font-size:21px;
+  margin-top:8px!important;
+  color:var(--muted)
+}
+
+.business-course-list {
+  padding:0;
+  list-style:none;
+  margin-top:20px!important;
+  font-size:22px;
+  line-height:1.35
+}
+
+.business-course-list li {
+  padding:6px 0;
+  border-bottom:1px solid #cdd2c2
+}
+
+.business-course-list li:last-child {
+  border-bottom:0
+}
+
+.business-workshop {
+  position:relative;
+  overflow:hidden;
+  background:var(--ink)
+}
+
+.business-workshop>object {
+  display:block;
+  width:100%;
+  height:100%
+}
+
+.business-workshop>p {
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:26px;
+  font-size:28px;
+  font-weight:500;
+  color:white;
+  background:linear-gradient(transparent,#000c)
+}
+
+.business-projects {
+  display:grid;
+  grid-template-rows:repeat(3,1fr);
+  gap:24px
+}
+
+.business-project-card {
+  position:relative;
+  padding:32px 36px;
+  border:0;
+  overflow:hidden
+}
+
+.business-project-card h2 {
+  font-size:48px;
+  line-height:1.12;
+  margin-top:25px;
+  position:relative;
+  max-width:535px
+}
+
+.business-project-card>p:not(.eyebrow) {
+  font-size:26px;
+  line-height:1.4;
+  margin-top:20px;
+  position:relative
+}
+
+.business-project-number {
+  position:absolute;
+  right:26px;
+  top:14px;
+  font-size:100px;
+  line-height:1;
+  opacity:.14
+}
+
+.business-project-dark {
+  background:var(--ink);
+  color:var(--paper)
+}
+
+.business-project-pink {
+  background:#ead8c9;
+  color:var(--ink)
+}
+
+.business-project-lime {
+  background:#dce1be;
+  color:var(--ink)
+}
+
+.business-project-partners {
+  position:absolute;
+  left:36px;
+  right:36px;
+  bottom:24px;
+  height:83px;
+  padding:6px 18px;
+  background:white
+}
+
+.business-project-partners object {
+  display:block;
+  width:100%;
+  height:100%
+}
+
+
+/* The two compact programmes use the same type, surfaces, and semester rhythm. */
+.dual-programme {
+  position:absolute;
+  left:120px;
+  width:1245px;
+  height:875px
+}
+
+.dual-programme-marketing {
+  top:246px
+}
+
+.dual-programme-technology {
+  top:1200px
+}
+
+.dual-header {
+  display:grid;
+  grid-template-columns:103px 1fr 240px;
+  gap:26px;
+  align-items:start
+}
+
+.dual-header .eyebrow {
+  font-size:19px;
+  line-height:1.2
+}
+
+.dual-header h2 {
+  font-size:58px;
+  line-height:1.05;
+  margin-top:16px
+}
+
+.dual-programme-number {
+  font-size:95px;
+  line-height:1;
+  color:var(--coral)
+}
+
+.dual-header-photo {
+  height:164px;
+  overflow:hidden;
+  background:var(--ink)
+}
+
+.dual-header-photo img,.dual-header-photo object {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+
+.dual-column-labels {
+  position:absolute;
+  left:0;
+  top:188px;
+  width:100%;
+  display:grid;
+  grid-template-columns:530px 679px;
+  gap:36px;
+  padding-top:17px;
+  border-top:1px solid var(--rule)
+}
+
+.dual-column-labels .eyebrow {
+  font-size:20px
+}
+
+.dual-column-labels span {
+  font-size:20px;
+  margin-top:6px
+}
+
+.dual-learning-layout {
+  position:absolute;
+  left:0;
+  top:266px;
+  width:100%;
+  height:635px;
+  display:grid;
+  grid-template-columns:530px 679px;
+  gap:36px
+}
+
+.dual-course-groups {
+  display:grid;
+  grid-template-rows:367px 248px;
+  gap:19px
+}
+
+.dual-course-card {
+  padding:18px 24px
+}
+
+.dual-course-card h3 {
+  font-size:34px;
+  line-height:1.1
+}
+
+.dual-course-card .business-course-list {
+  font-size:20px;
+  line-height:1.3;
+  margin-top:12px!important
+}
+
+.dual-course-card .business-course-list li {
+  padding:3px 0
+}
+
+.dual-projects {
+  display:grid;
+  grid-template-rows:repeat(3,1fr);
+  gap:19px
+}
+
+.dual-project-card {
+  padding:18px 24px
+}
+
+.dual-project-card .eyebrow {
+  font-size:18px;
+  line-height:1.2
+}
+
+.dual-project-card .business-project-number {
+  font-size:66px;
+  right:16px;
+  top:10px
+}
+
+.dual-project-card h3 {
+  font-size:32px;
+  line-height:1.1;
+  margin-top:12px;
+  position:relative
+}
+
+.dual-project-card>p.dual-project-copy {
+  font-size:19px;
+  line-height:1.35;
+  margin-top:9px;
+  max-width:590px
+}
+
+.dual-programme-divider {
+  position:absolute;
+  left:120px;
+  top:1175px;
+  width:1245px;
+  height:1px;
+  background:var(--rule)
+}
+
+.dual-tool-logos {
+  position:absolute;
+  right:24px;
+  bottom:13px;
+  display:flex;
+  align-items:center;
+  justify-content:space-evenly;
+  gap:12px;
+  width:392px;
+  height:35px;
+  padding:4px 8px;
+  background:#fff;
+  color:#183f35
+}
+
+.dual-tool-logos img {
+  display:block;
+  width:64px;
+  height:26px;
+  object-fit:contain
+}
+
+.dual-tool-logos object {
+  display:block;
+  width:94px;
+  height:26px
+}
+
+.dual-tool-logos span {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  font-weight:500;
+  white-space:nowrap
+}
+
+.dual-tool-logos span img {
+  width:22px;
+  height:22px
+}
+
+
+/* Student outcomes: a photo contact sheet, brand wall, and documented achievements. */
+.experience-heading {
+  top:250px
+}
+
+.internship-title {
+  font-size:95px;
+  line-height:1.08!important;
+  max-width:1150px
+}
+
+.internship-grid {
+  position:absolute;
+  left:120px;
+  top:531px;
+  width:1245px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:repeat(3,210px);
+  gap:18px
+}
+
+.internship-card {
+  position:relative;
+  grid-column:var(--column);
+  grid-row:var(--row);
+  overflow:hidden;
+  background:var(--ink);
+  color:white
+}
+
+.internship-card-large {
+  grid-column:1/span 2;
+  grid-row:1/span 2
+}
+
+.internship-artwork {
+  display:block;
+  width:100%;
+  height:100%
+}
+
+.internship-card::after {
+  content:'';
+  position:absolute;
+  inset:45% 0 0;
+  background:linear-gradient(transparent,#102820ee 90%);
+  pointer-events:none
+}
+
+.internship-caption {
+  position:absolute;
+  z-index:1;
+  left:14px;
+  right:14px;
+  bottom:16px
+}
+
+.caption-name,.achievement-name {
+  font-size:18px;
+  font-weight:500;
+  line-height:1.3
+}
+
+.caption-detail,.achievement-detail {
+  font-size:14px;
+  line-height:1.4;
+  margin-top:6px!important
+}
+
+.internship-card-large .caption-name {
+  font-size:29px
+}
+
+.internship-card-large .caption-detail {
+  font-size:22px
+}
+
+.brands-heading {
+  top:1236px
+}
+
+.brand-tagline {
+  font-size:43px;
+  line-height:1.15!important
+}
+
+.brand-logos {
+  position:absolute;
+  left:120px;
+  top:1315px;
+  width:1245px;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  grid-auto-rows:60px;
+  gap:10px 20px;
+  background:#fff;
+  padding:12px 24px
+}
+
+.brand-logo {
+  display:block;
+  width:100%;
+  height:60px;
+  padding:4px 8px;
+  object-fit:contain
+}
+
+.brand-logo-new {
+  grid-column:var(--column);
+  grid-row:3
+}
+
+.brand-logo-boat {
+  padding:10px 18px
+}
+
+.brand-logo-perfora {
+  filter:brightness(0)
+}
+
+.brand-logo-salty {
+  padding:8px 18px
+}
+
+.experience-divider {
+  position:absolute;
+  left:120px;
+  top:1575px;
+  width:1245px;
+  height:1px;
+  background:var(--rule)
+}
+
+.achievements-layout {
+  position:absolute;
+  left:120px;
+  top:1620px;
+  width:1245px;
+  height:489px;
+  display:grid;
+  grid-template-columns:624px 585px;
+  gap:36px
+}
+
+.venture-card {
+  overflow:hidden;
+  background:#e9ebdf;
+  display:grid;
+  grid-template-rows:259px 230px
+}
+
+.venture-image {
+  position:relative;
+  background:#dfdfd4
+}
+
+.venture-artwork {
+  display:block;
+  width:100%;
+  height:100%
+}
+
+.venture-person {
+  position:absolute;
+  left:54%;
+  top:25px;
+  right:20px
+}
+
+.venture-person h3 {
+  font-size:47px;
+  line-height:1.05
+}
+
+.venture-person p {
+  font-size:21px;
+  margin-top:14px!important
+}
+
+.venture-copy {
+  padding:22px 26px;
+  font-size:23px;
+  line-height:1.4
+}
+
+.achievements-column {
+  display:grid;
+  grid-template-rows:58px 1fr;
+  gap:12px;
+  min-width:0
+}
+
+.achievements-title {
+  font-size:42px;
+  line-height:1.1
+}
+
+.achievement-cards {
+  display:grid;
+  grid-template-rows:repeat(3,1fr);
+  gap:12px
+}
+
+.achievement-card {
+  border-top:1px solid var(--rule);
+  display:grid;
+  grid-template-columns:127px 1fr;
+  gap:20px;
+  align-items:center;
+  min-width:0
+}
+
+.achievement-artwork {
+  display:block;
+  width:127px;
+  height:122px
+}
+
+.achievement-card .achievement-name {
+  font-size:25px
+}
+
+.achievement-card .achievement-detail {
+  font-size:19px
+}
+
+
+/* Campus: a photographic journal with horizontal category headings. */
+.campus-layout {
+  color:var(--paper)
+}
+
+.campus-heading {
+  top:250px
+}
+
+.campus-heading .page-kicker,.campus-title .crimson {
+  color:#e6c58f
+}
+
+.campus-title {
+  font-size:106px;
+  line-height:1.1!important;
+  margin-top:24px!important
+}
+
+.campus-intro {
+  top:465px;
+  font-size:27px;
+  line-height:1.4;
+  color:#dce5da;
+  max-width:1190px
+}
+
+.campus-rows {
+  position:absolute;
+  left:120px;
+  top:657px;
+  width:1245px;
+  display:grid;
+  grid-template-rows:repeat(4,333px);
+  gap:35px
+}
+
+.campus-row {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:44px 267px;
+  gap:22px 24px;
+  position:relative
+}
+
+.campus-tab {
+  grid-column:1/-1;
+  grid-row:1;
+  display:flex;
+  align-items:center;
+  font-size:23px;
+  font-weight:600;
+  line-height:1.2;
+  letter-spacing:.04em;
+  border-top:1px solid #ffffff40;
+  padding-top:12px;
+  color:#e6c58f
+}
+
+.campus-card {
+  position:relative;
+  grid-row:2;
+  overflow:hidden;
+  margin:0
+}
+
+.campus-card>img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+
+.campus-card>p {
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:35px 20px 18px;
+  font-size:21px;
+  font-weight:500;
+  line-height:1.3;
+  background:linear-gradient(transparent,#102820e6)
+}
+
+
+/* Admissions: assurance first, a clear three-step path, then direct contact. */
+.degree-heading {
+  top:250px;
+  width:830px
+}
+
+.degree-title {
+  font-size:104px;
+  line-height:1.08!important
+}
+
+.degree-title .crimson {
+  color:#e6c58f
+}
+
+.degree-body {
+  top:536px;
+  width:758px
+}
+
+.degree-copy {
+  display:grid;
+  gap:26px
+}
+
+.degree-copy>p {
+  font-size:25px;
+  line-height:1.4
+}
+
+.degree-copy>p.degree-note {
+  font-size:20px;
+  line-height:1.35;
+  color:#d7e2d6
+}
+
+.degree-photo {
+  position:absolute;
+  left:940px;
+  top:241px;
+  width:425px;
+  height:704px;
+  object-fit:cover;
+  object-position:49% center
+}
+
+.admissions-panel {
+  position:absolute;
+  top:1000px;
+  left:0;
+  width:1485px;
+  height:605px;
+  background:var(--paper);
+  color:var(--ink);
+  padding:46px 120px 40px
+}
+
+.admissions-title {
+  font-size:85px;
+  line-height:1.08!important
+}
+
+.admissions-intro {
+  font-size:24px;
+  line-height:1.4;
+  margin-top:18px!important
+}
+
+.admissions-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:36px;
+  margin-top:37px
+}
+
+.admission-card {
+  border-top:2px solid var(--ink);
+  padding-top:22px;
+  position:relative
+}
+
+.admission-number {
+  position:absolute;
+  right:0;
+  top:15px;
+  font-size:66px;
+  line-height:1;
+  color:#c7ccba
+}
+
+.admission-card .eyebrow {
+  font-size:20px;
+  margin-top:6px
+}
+
+.admission-card h3 {
+  font-size:33px;
+  line-height:1.15;
+  margin-top:20px;
+  min-height:76px
+}
+
+.admission-card>p:last-child {
+  font-size:22px;
+  line-height:1.35;
+  margin-top:16px
+}
+
+.contact-panel {
+  position:absolute;
+  top:1648px;
+  left:120px;
+  width:1245px;
+  color:var(--paper)
+}
+
+.contact-panel>h2 {
+  font-size:53px;
+  line-height:1.15
+}
+
+.contact-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:70px;
+  margin-top:27px
+}
+
+.contact-stack {
+  display:grid;
+  align-content:start;
+  gap:21px
+}
+
+.contact-stack h3 {
+  font-family:Poppins,system-ui,sans-serif;
+  font-size:19px;
+  font-weight:600;
+  line-height:1.2;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:#e6c58f
+}
+
+.contact-stack p {
+  font-size:25px;
+  line-height:1.4;
+  margin-top:8px!important
+}
+
+.contact-panel a {
+  color:inherit;
+  text-decoration:none
+}
+
+.contact-panel a:hover {
+  text-decoration:underline
+}
+
+.contact-panel .follow-title {
+  font-size:29px;
+  margin-top:25px!important
+}
+
+.social-row {
+  display:flex;
+  justify-content:space-between;
+  gap:32px;
+  font-size:20px;
+  line-height:1.4;
+  margin-top:14px
+}
+
+.social-row b {
+  display:inline-flex;
+  min-width:22px;
+  justify-content:center;
+  margin-right:4px;
+  font-weight:600
+}
+
+
+.sr-only {
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip-path:inset(50%);
+  white-space:nowrap
+}
+
+
 @media print {
-  @page { size: 1485pt 2235pt; margin: 0; }
-  :root { color-scheme: light; background: white; }
-  body { background: white; margin: 0; }
-  .viewer-toolbar, .page-turn-controls, #page-announcement { display: none; }
-  .brochure { display: block; padding: 0; }
-  .page-frame {
-    --scale: 1.3333333333 !important;
-    width: 1485pt;
-    height: 2235pt;
-    margin: 0;
-    box-shadow: none;
-    break-after: page;
-    break-inside: avoid;
-  }
-  .page-frame:last-child { break-after: auto; }
-  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  @page {
+  size:1485pt 2235pt;
+  margin:0
 }
 
-/* Shared grid for student portraits, partner logos, and achievements. */
-.cover-shade { position: absolute; left: 0; top: 770px; width: 1485px; height: 600px; background: radial-gradient(ellipse at 82% 40%, #0007, transparent 60%), linear-gradient(180deg, transparent 0%, #000b 20%, #000d 48%, #000d 72%, transparent 100%); pointer-events: none; }
-.internships-layout { height: 2140px; background: white; }
-.internship-grid { position: absolute; left: 120px; top: 300px; width: 1245px; display: grid; grid-template-columns: repeat(5,1fr); grid-template-rows: repeat(3,214px); gap: 24px; }
-.internship-card { position: relative; grid-column: var(--column); grid-row: var(--row); overflow: hidden; border: 3px solid #111; background: #111; color: white; }
-.internship-card-large { grid-column: 1 / span 2; grid-row: 1 / span 2; }
-.internship-artwork { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
-.internship-card::after { content: ''; position: absolute; inset: 30% 0 0; background: linear-gradient(transparent, #000d 90%); pointer-events: none; }
-.internship-caption { position: absolute; z-index: 1; left: 16px; right: 16px; bottom: 16px; }
-.internship-caption .caption-name { font-size: 18px; line-height: 1.25; }
-.internship-caption .caption-detail { font-size: 14px; line-height: 1.3; margin-top: 6px !important; white-space: nowrap; }
-.internship-card-large .caption-name { font-size: 24px; }
-.internship-card-large .caption-detail { font-size: 20px; }
-.brand-logos { position: absolute; left: 120px; top: 1111px; width: 1245px; display: grid; grid-template-columns: repeat(6,1fr); grid-auto-rows: 84px; gap: 12px 20px; }
-.brand-logo { display: block; width: 100%; height: 84px; border: 0; pointer-events: none; padding: 8px 4px; object-fit: contain; }
-.brand-logo-boat { padding: 16px 18px; }
-.experience-divider { position: absolute; left: 120px; top: 1410px; width: 1245px; height: 3px; background: #666; }
-.achievements-layout { position: absolute; left: 120px; top: 1450px; width: 1245px; height: 650px; display: grid; grid-template-columns: 624px 585px; gap: 36px; }
-.venture-card { border: 4px solid #ef3a5d; box-shadow: 10px 10px #ef3a5d; height: 650px; overflow: hidden; background: white; }
-.venture-image { position: relative; height: 340px; background: #dbd8d2; }
-.venture-artwork { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
-.venture-person { position: absolute; left: 54%; top: 34px; right: 20px; }
-.venture-person h3 { font-size: 50px; line-height: 1.05; }
-.venture-person p { font-size: 24px; margin-top: 16px; }
-.venture-copy { padding: 28px; font-size: 26px; line-height: 1.4; }
-.achievements-column { display: grid; grid-template-columns: 48px 1fr; gap: 20px; min-width: 0; height: 650px; }
-.achievements-title { font-size: 42px; line-height: 1; writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; white-space: nowrap; justify-self: center; }
-.achievement-cards { display: grid; grid-template-rows: repeat(3,1fr); gap: 25px; }
-.achievement-card { border: 4px solid #111; box-shadow: 8px 8px #d5fe00; padding: 12px; display: grid; grid-template-columns: 175px 1fr; gap: 16px; align-items: center; min-width: 0; }
-.achievement-card:nth-child(2) { box-shadow: 8px 8px #ef3a5d; }
-.achievement-artwork { display: block; width: 175px; height: 168px; border: 0; pointer-events: none; }
-.achievement-card .achievement-name { font-size: 28px; }
-.achievement-card .achievement-detail { font-size: 23px; }
+:root {
+  color-scheme:light;
+  background:white
+}
 
-/* Alumni panel shares the course grid's outer edges. */
-.alumni-panel { position: absolute; left: 120px; top: 940px; width: 1245px; height: 876px; background: #111; border-radius: 72px 72px 0 0; padding: 34px 48px 0; }
-.alumni-panel-heading { display: flex; align-items: baseline; justify-content: center; gap: 24px; white-space: nowrap; }
-.alumni-panel-heading h2 { font-size: 48px; line-height: 1.12; }
-.alumni-panel-heading > p { font-family: Fraunces,Georgia,serif; font-variation-settings: var(--fraunces-variation); font-size: 82px; line-height: 1.1; }
-.university-artwork { position: absolute; width: 680px; height: 150px; left: 282.5px; top: 170px; border: 0; pointer-events: none; }
-.founder-grid { position: absolute; left: 48px; right: 48px; top: 328px; bottom: 0; display: grid; grid-template-columns: repeat(2,1fr); gap: 28px; }
-.founder-card { position: relative; overflow: hidden; border: 1px solid #ffffff24; }
-.founder-artwork { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
-.founder-card::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 90px; background: linear-gradient(transparent,#0009); pointer-events: none; }
-.founder-card-copy { position: absolute; left: 28px; right: 24px; top: 28px; }
-.founder-card-copy::before { content: ''; position: absolute; left: -12px; top: 0; width: 6px; height: 68px; background: #ef3a5d; }
-.founder-card-copy .founder-label, .founder-card-copy .founder-role { font-size: 26px; line-height: 1.3; }
-.founder-card-copy .credential-stack { font-size: 21px; margin-top: 30px; gap: 10px; }
-.founder-name { position: absolute; z-index: 1; left: 28px; bottom: 12px; padding: 6px 12px; border-radius: 4px; background: #111; color: #fff; font-size: 28px; font-weight: 500; white-space: nowrap; }
-/* Business curriculum: foundations on the left, practical projects on the right. */
-.business-layout { height: 2140.5px; background: #fff; }
-.business-header { position: absolute; left: 120px; top: 95px; width: 1245px; padding-bottom: 34px; border-bottom: 4px solid #111; }
-.business-header h1 { font-size: 102px; line-height: 1.08; margin-top: 22px; }
-.business-subtitle { font-size: 26px; line-height: 1.4; margin-top: 20px !important; }
-.business-number { position: absolute; right: 0; top: 0; width: 180px; height: 180px; border-radius: 50%; background: #d5fe00; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.business-number > span { font-family: Fraunces,Georgia,serif; font-size: 94px; font-weight: 400; line-height: 1; font-variation-settings: var(--fraunces-variation); }
-.business-number > p { font-size: 18px; line-height: 1.2; font-weight: 600; margin-top: 8px; }
-.business-column-labels { position: absolute; left: 120px; top: 485px; width: 1245px; display: grid; grid-template-columns: 530px 679px; gap: 36px; }
-.business-column-labels .eyebrow { font-size: 25px; }
-.business-column-labels span { display: inline-block; font-size: 24px; font-weight: 400; letter-spacing: normal; text-transform: none; margin-left: 12px; }
-.business-learning-layout { position: absolute; left: 120px; top: 550px; width: 1245px; height: 1540px; display: grid; grid-template-columns: 530px 679px; gap: 36px; }
-.business-course-groups { display: grid; grid-template-rows: 710px 543px 231px; gap: 28px; }
-.business-course-card { background: #f5f3ef; border: 2px solid #e5e0d9; border-radius: 32px; padding: 28px 30px; overflow: hidden; }
-.business-course-card h2 { font-size: 42px; line-height: 1.1; }
-.business-card-intro { font-size: 21px; margin-top: 8px !important; color: #666; }
-.business-course-list { padding: 0; list-style: none; margin-top: 18px !important; font-size: 23px; line-height: 1.35; }
-.business-course-list li { padding: 4px 0 4px 20px; position: relative; border-bottom: 1px solid #ddd7ce; }
-.business-course-list li:last-child { border-bottom: 0; }
-.business-course-list li::before { content: ''; position: absolute; left: 0; top: 16px; width: 6px; height: 6px; border-radius: 50%; background: #ef3a5d; }
-.business-workshop { position: relative; border-radius: 32px; overflow: hidden; background: #111; }
-.business-workshop > object { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
-.business-workshop > p { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px; font-size: 28px; font-weight: 500; color: white; background: linear-gradient(transparent,#000c); }
-.business-projects { display: grid; grid-template-rows: repeat(3,1fr); gap: 28px; }
-.business-project-card { position: relative; padding: 32px; border: 3px solid #111; border-radius: 32px; overflow: hidden; }
-.business-project-card h2 { font-size: 48px; line-height: 1.12; margin-top: 22px; position: relative; }
-.business-project-card > p:not(.eyebrow) { font-size: 26px; line-height: 1.4; margin-top: 20px; position: relative; }
-.business-project-number { position: absolute; right: 24px; top: 16px; font-family: Fraunces,Georgia,serif; font-size: 110px; line-height: 1; opacity: .13; font-variation-settings: var(--fraunces-variation); }
-.business-project-dark { background: #111; color: white; }
-.business-project-pink { background: #fff2f5; }
-.business-project-lime { background: #d5fe00; }
-.business-project-partners { position: absolute; left: 32px; right: 32px; bottom: 32px; height: 110px; padding: 6px 10px; border-radius: 14px; background: white; }
-.business-project-partners object { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
-/* Campus cards use four uniform rows with centred activity tabs. */
-.campus-layout { height: 2140px; background: #000; }
-.campus-rows { position: absolute; left: 120px; top: 496px; width: 1245px; display: grid; grid-template-rows: repeat(4,336px); gap: 46px; }
-.campus-row { display: grid; grid-template-columns: 90px repeat(3,1fr); gap: 24px; color: white; }
-.campus-row-reverse { grid-template-columns: repeat(3,1fr) 90px; }
-.campus-tab { align-self: center; justify-self: center; width: 90px; height: 302.25px; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 7px 7px white; font-size: 28px; font-weight: 500; line-height: 1.2; }
-.campus-tab span { display: block; transform: rotate(-90deg); white-space: nowrap; }
-.campus-row-crimson .campus-tab { background: #ef3a5d; }
-.campus-row-lime .campus-tab { background: #d5fe00; color: #111; }
-.campus-card { position: relative; border: 4px solid #111; border-radius: 67px; overflow: hidden; }
-.campus-row-crimson .campus-card { box-shadow: 8px 8px #ef3a5d; }
-.campus-row-lime .campus-card { box-shadow: 8px 8px #d5fe00; }
-.campus-card > object { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
-.campus-card > p { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; padding: 34px 14px 26px; font-size: 22px; font-weight: 500; line-height: 1.3; background: linear-gradient(transparent,#000b); }
+body {
+  background:white;
+  margin:0
+}
 
-.brand-logo-new { grid-column: var(--column); grid-row: 3; }
-.brand-logo-perfora { filter: brightness(0); }
-.brand-logo-salty { padding: 18px 18px; }
+.viewer-toolbar,.page-turn-controls,#page-announcement {
+  display:none
+}
 
-/* Programme 02 and 03 continue the same foundations / projects card system. */
-.dual-curriculum-layout { height: 2140.5px; background: white; }
-.dual-programme { position: absolute; left: 120px; width: 1245px; height: 990px; }
-.dual-programme-marketing { top: 75px; }
-.dual-programme-technology { top: 1130px; }
-.dual-header { display: grid; grid-template-columns: 110px 1fr 300px; gap: 24px; align-items: start; }
-.dual-header .eyebrow { font-size: 20px; line-height: 1.2; }
-.dual-header h2 { font-size: 60px; line-height: 1.05; margin-top: 12px; }
-.dual-programme-number { display: flex; align-items: center; justify-content: center; height: 110px; border-radius: 50%; background: #d5fe00; font-family: Fraunces,Georgia,serif; font-size: 78px; font-weight: 400; font-variation-settings: var(--fraunces-variation); }
-.dual-header-photo { height: 176px; border-radius: 24px; overflow: hidden; background: #111; }
-.dual-header-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.dual-header-photo object { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
-.dual-column-labels { position: absolute; left: 0; top: 190px; width: 100%; display: grid; grid-template-columns: 530px 679px; gap: 36px; padding-top: 18px; border-top: 3px solid #111; }
-.dual-column-labels .eyebrow { font-size: 22px; }
-.dual-column-labels span { font-size: 22px; font-weight: 400; text-transform: none; letter-spacing: normal; margin-left: 10px; }
-.dual-learning-layout { position: absolute; left: 0; top: 250px; width: 100%; height: 740px; display: grid; grid-template-columns: 530px 679px; gap: 36px; }
-.dual-course-groups { display: grid; grid-template-rows: 450px 270px; gap: 20px; }
-.dual-course-card { padding: 20px 24px; border-radius: 28px; }
-.dual-course-card h3 { font-size: 36px; line-height: 1.1; }
-.dual-course-card .business-course-list { font-size: 22px; line-height: 1.3; margin-top: 14px !important; }
-.dual-course-card .business-course-list li { padding-top: 2px; padding-bottom: 2px; }
-.dual-projects { display: grid; grid-template-rows: repeat(3,1fr); gap: 20px; }
-.dual-project-card { padding: 20px 24px; border-radius: 28px; }
-.dual-project-card .eyebrow { font-size: 20px; line-height: 1.2; }
-.dual-project-card .business-project-number { font-size: 78px; right: 20px; top: 12px; }
-.dual-project-card h3 { font-size: 36px; line-height: 1.1; margin-top: 12px; position: relative; }
-.dual-project-card > p.dual-project-copy { font-size: 21px; line-height: 1.35; margin-top: 12px; }
-.dual-programme-divider { position: absolute; left: 120px; top: 1097px; width: 1245px; height: 3px; background: #e4ded6; }
-.dual-tool-logos { position: absolute; right: 24px; bottom: 14px; display: flex; align-items: center; justify-content: space-evenly; gap: 14px; width: 420px; height: 52px; padding: 6px 12px; background: #fff; color: #111; border-radius: 12px; }
-.dual-tool-logos img { display: block; width: 72px; height: 38px; object-fit: contain; }
-.dual-tool-logos object { display: block; width: 100px; height: 38px; border: 0; pointer-events: none; }
-.dual-tool-logos span { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500; white-space: nowrap; }
-.dual-tool-logos span img { width: 30px; height: 30px; }
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.brochure {
+  display:block;
+  padding:0
+}
+
+.page-frame {
+  --scale:1.3333333333!important;
+  width:1485pt;
+  height:2235pt;
+  margin:0;
+  box-shadow:none;
+  break-after:page;
+  break-inside:avoid
+}
+
+.page-frame:last-child {
+  break-after:auto
+}
+
+* {
+  print-color-adjust:exact;
+  -webkit-print-color-adjust:exact
+}
+
+
+}
