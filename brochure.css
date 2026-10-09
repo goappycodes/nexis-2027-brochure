@@ -247,13 +247,13 @@ button, select { font: inherit; }
 .internship-card-large { grid-column: 1 / span 2; grid-row: 1 / span 2; }
 .internship-artwork { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
 .internship-photo { object-fit: cover; object-position: center 35%; transform: scale(1.8); transform-origin: center 40%; }
-.internship-photo-waibhavi { object-fit: cover; object-position: right 28%; transform: scale(1.5); transform-origin: right 40%; }
+.internship-photo-aarav { object-fit: cover; object-position: center 52%; transform: scale(1.4); transform-origin: center 45%; }
 .internship-photo-dwaipayan { object-fit: cover; object-position: right 48%; transform: scale(1.4); transform-origin: right 40%; }
 .internship-card::after { content: ''; position: absolute; inset: 30% 0 0; background: linear-gradient(transparent, #000d 90%); pointer-events: none; }
 .internship-caption { position: absolute; z-index: 1; left: 16px; right: 16px; bottom: 16px; }
 .internship-caption .caption-name { font-size: 18px; line-height: 1.25; }
 .internship-caption .caption-detail { font-size: 14px; line-height: 1.3; margin-top: 6px !important; white-space: nowrap; }
-.internship-card-waibhavi .caption-detail { white-space: normal; }
+.internship-card-aarav .caption-detail { white-space: normal; }
 .internship-card-large .caption-name { font-size: 24px; }
 .internship-card-large .caption-detail { font-size: 20px; }
 .brand-logos { position: absolute; left: 120px; top: 1111px; width: 1245px; display: grid; grid-template-columns: repeat(6,1fr); grid-auto-rows: 84px; gap: 12px 20px; }
