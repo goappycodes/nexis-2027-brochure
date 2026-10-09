@@ -7,7 +7,7 @@ const require=createRequire(process.env.PLAYWRIGHT_PACKAGE_PATH||'C:/Users/rites
 const {chromium}=require('playwright');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const edition=process.env.BROCHURE_EDITION;
-if(edition && edition!=='digital-marketing-commerce')throw Error('Unknown brochure edition');
+if(edition && !['digital-marketing-commerce','business-management','computer-science-ai'].includes(edition))throw Error('Unknown brochure edition');
 const name=edition?`nexis-2027-${edition}-print`:'nexis-2027-print';
 const raw=path.join(root,'tmp','pdfs',`${name}-chromium.pdf`),output=path.join(root,'output','pdf',`${name}.pdf`);
 fs.mkdirSync(path.dirname(raw),{recursive:true});

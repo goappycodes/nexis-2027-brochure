@@ -57,6 +57,35 @@ For edition-specific browser checks, set
 --quick` or `node tools/verify-flipbook.mjs`. Reports and screenshots stay in
 `tmp/verification/digital-marketing-commerce/`, outside Git.
 
+## Other programme editions
+
+The Business Management edition is at `/business-management/`, and the Computer
+Science & AI edition is at `/computer-science-ai/`. Each is a separate eight-page
+brochure with its own `index.html`, course-specific curriculum, six semester
+projects, tool logos, career pathways and degree information. They share the
+latest faculty artwork and the existing campus and student experience pages.
+
+Programme content comes from the supplied website's canonical Business
+Management page, `UgCurriculumSection.tsx`, `CsAiCurriculum.tsx`,
+`CsAiBuildProjects.tsx`, `CsAiTechStack.tsx`, `UgCareerPathways.tsx` and
+`UgDegreePathways.tsx`, checked against the live programme URLs. Business
+Management has nine named workplace tools; CS & AI has 21 platforms across five
+disciplines. Vector tool glyphs come from the website's installed `react-icons`
+package and its supplied Excel / Power BI SVGs. New photos are in
+`assets/images/programmes/`, and vector logos are in `assets/artwork/course-tools/`.
+
+The fee method follows the user's earlier instruction: six published semester
+fees plus ₹45,000 admission. Business Management is ₹1,55,000 per semester,
+₹9,30,000 tuition and ₹9,75,000 total. Computer Science & AI is ₹1,65,000 per
+semester, ₹9,90,000 tuition and ₹10,35,000 total. These totals correct the source
+pages' inconsistent three-year totals. NEXIS certification and the optional
+independently enrolled university degrees are stated separately.
+
+`npm run export:business` and `npm run export:cs` export the respective print
+PDFs to `output/pdf/`. The static build includes all three dedicated editions.
+Use `BROCHURE_EDITION=business-management` or `computer-science-ai` with the
+existing browser verification scripts. Generated PDFs and reviews stay out of Git.
+
 ## Deploy on Vercel
 
 Import this repository and select the `main` branch. The included `vercel.json`

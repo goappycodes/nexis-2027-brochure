@@ -449,3 +449,20 @@ button, select { font: inherit; }
 .digital-edition .digital-admission-link { font-size: 22px; margin-top: 18px; color: #d5fe00; }
 .digital-edition .follow-title { display: none; }
 .digital-edition .social-row { font-size: 18px; margin-top: 16px; }
+
+/* The other dedicated programmes share the same editorial card system. */
+.programme-edition .dual-project-card .eyebrow { font-size: 18px; }
+.programme-edition #page-5 .dual-project-card h3 { font-size: 32px; }
+.cs-edition #page-5 .dual-course-groups { grid-template-rows: 390px 230px; }
+.cs-edition .digital-tool-group { height: 180px; }
+.cs-edition .tool-group-cloud { grid-column: 1 / -1; }
+.cs-edition .tool-group-cloud ul { grid-template-columns: repeat(8,minmax(0,1fr)); }
+.business-edition .digital-tool-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.business-edition .digital-tool-group { height: 180px; }
+.business-edition .digital-tool-group ul { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.business-edition .digital-careers { top: 1470px; }
+.business-edition .pathway-photo { display: block; width: 100%; height: 150px; object-fit: cover; border-radius: 14px; margin-bottom: 18px; }
+.business-edition .pathway-intro { font-size: 20px; line-height: var(--body-leading); margin-top: 12px; }
+.business-edition .digital-project-photo[src$="consulting-4.jpg"] { object-position: center 65%; }
+.business-edition .digital-project-photo[src$="ai-build-5.jpg"] { object-position: center 40%; }
+.cs-edition .digital-project-photo[src$="project-execution.jpeg"] { object-position: center 35%; }
