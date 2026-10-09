@@ -397,20 +397,30 @@ button, select { font: inherit; }
 .digital-edition .digital-project-photo[src$="dropshipping.jpg"] { object-position: center 51%; }
 .digital-edition .digital-project-photo[src$="market-for-cause.jpg"] { object-position: center 40%; }
 .digital-edition .digital-project-photo[src$="nexventure-lab.jpg"] { object-position: center 43%; }
-.digital-edition .digital-toolkit { position: absolute; left: 120px; top: 1130px; width: 1245px; border-top: 3px solid #e4ded6; padding-top: 30px; }
+.digital-edition #page-5 .digital-year { height: 890px; }
+.digital-edition #page-5 .dual-learning-layout { height: 640px; }
+.digital-edition #page-5 .dual-course-groups { grid-template-rows: 320px 300px; }
+.digital-edition #page-5 .dual-project-copy { max-width: 400px; }
+.digital-edition #page-5 .digital-project-photo { left: auto; right: 24px; width: 180px; height: 112px; }
+.digital-edition .digital-toolkit { position: absolute; left: 120px; top: 1030px; width: 1245px; border-top: 3px solid #e4ded6; padding-top: 30px; }
 .digital-edition .digital-toolkit > h2, .digital-edition .digital-careers > h2 { font-size: 60px; }
 .digital-edition .digital-toolkit > p { font-size: 24px; margin-top: 16px; }
-.digital-edition .digital-tool-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 20px; margin-top: 24px; }
-.digital-edition .digital-tool-group { height: 340px; background: #f5f3ef; border: 2px solid #e5e0d9; border-radius: 28px; padding: 22px 18px; }
-.digital-edition .digital-tool-group h3 { font-size: 32px; min-height: 70px; }
-.digital-edition .digital-tool-group ul { padding: 0; list-style: none; font-size: 21px; line-height: var(--body-leading); margin-top: 14px; display: grid; gap: 6px; }
-.digital-edition .digital-careers { position: absolute; left: 120px; top: 1680px; width: 1245px; }
-.digital-edition .digital-role-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; margin-top: 22px; }
-.digital-edition .digital-role-group { background: #111; color: white; border-top: 8px solid #d5fe00; border-radius: 24px; padding: 22px; }
+.digital-edition .digital-tool-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; margin-top: 24px; }
+.digital-edition .digital-tool-group { height: 280px; background: #f5f3ef; border: 2px solid #e5e0d9; border-radius: 28px; padding: 14px 18px; }
+.digital-edition .digital-tool-group h3 { font-size: 32px; min-height: 36px; }
+.digital-edition .digital-tool-group ul { padding: 0; list-style: none; font-size: 18px; line-height: var(--body-leading); margin-top: 14px; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); grid-auto-rows: 92px; gap: 10px; }
+.digital-edition .digital-tool-group li { display: flex; flex-direction: column; align-items: center; min-width: 0; text-align: center; }
+.digital-edition .digital-tool-logo { display: flex; align-items: center; justify-content: center; flex: 0 0 36px; width: 100%; height: 36px; border-radius: 8px; background: white; overflow: hidden; }
+.digital-edition .digital-tool-logo img { display: block; width: 118px; height: 34px; object-fit: contain; transform: translate(var(--logo-x,0px),var(--logo-y,0px)) scale(var(--logo-scale,1)); }
+.digital-edition .digital-tool-name { display: block; margin-top: 4px; font-weight: 500; }
+.digital-edition .digital-careers { position: absolute; left: 120px; top: 1810px; width: 1245px; }
+.digital-edition .digital-careers > h2 { font-size: 50px; }
+.digital-edition .digital-role-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; margin-top: 20px; }
+.digital-edition .digital-role-group { background: #111; color: white; border-top: 8px solid #d5fe00; border-radius: 24px; padding: 18px; }
 .digital-edition .digital-role-group:nth-child(2) { border-top-color: #ef3a5d; }
-.digital-edition .digital-role-group h3 { font-size: 32px; }
-.digital-edition .digital-role-group ul { padding: 0; list-style: none; font-size: 23px; line-height: var(--body-leading); margin-top: 16px; display: grid; gap: 6px; }
-.digital-edition .digital-careers > p { font-size: 24px; margin-top: 22px; }
+.digital-edition .digital-role-group h3 { font-size: 30px; }
+.digital-edition .digital-role-group ul { padding: 0; list-style: none; font-size: 21px; line-height: var(--body-leading); margin-top: 16px; display: grid; gap: 4px; }
+.digital-edition .digital-careers > p { font-size: 22px; margin-top: 18px; }
 .digital-edition .internship-title { font-size: 78px; }
 .digital-edition .digital-student-note { font-size: 22px; }
 .digital-edition .degree-copy { font-size: 24px; gap: 24px; }

@@ -49,7 +49,10 @@ const summary = await page.evaluate(() => ({
   }),
   cardOverflow: [...document.querySelectorAll('.admission-card, .business-course-card, .business-project-card, .venture-card, .achievement-card')].filter(el=>el.scrollHeight>el.clientHeight+1).map(el=>({class:el.className,text:el.innerText})),
   digitalCardOverflow: [...document.querySelectorAll('.digital-tool-group, .digital-role-group')].filter(el=>el.scrollHeight>el.clientHeight+1 || el.scrollWidth>el.clientWidth+1).map(el=>el.innerText),
-  digitalPhotoOverlap: [...document.querySelectorAll('.digital-year .dual-project-card')].filter(el=>el.querySelector('.dual-project-copy').getBoundingClientRect().bottom>el.querySelector('img').getBoundingClientRect().top-3).map(el=>el.innerText),
+  digitalPhotoOverlap: [...document.querySelectorAll('.digital-year .dual-project-card')].filter(el=>{
+    const copy=el.querySelector('.dual-project-copy').getBoundingClientRect(), photo=el.querySelector('img').getBoundingClientRect();
+    return copy.right>photo.left && copy.left<photo.right && copy.bottom>photo.top-3 && copy.top<photo.bottom;
+  }).map(el=>el.innerText),
   overviewOverflow: [...document.querySelectorAll('.overview-course')].filter(el=>el.scrollHeight>el.clientHeight).map(el=>el.innerText),
   coverTagline: (() => {
     const el=document.querySelector('.cover-tagline');

@@ -28,6 +28,13 @@ the `.digital-edition` rules in `brochure.css` for its layout. The six additiona
 programme photos are in `assets/images/digital/`; they were copied from the
 supplied NEXIS website repository.
 
+The toolkit on page 5 has 28 labelled logos across Growth & analytics,
+Commerce & websites, Content & creative, and AI & operations. Its 27 raster
+logos come from the website's `public/images/ug/digital-marketing-tools/` folder
+and live in `assets/images/digital/tools/`. Meta Ads uses the shared Meta SVG.
+CSS fits each logo at its natural proportions, with whitespace around the source
+wordmarks accounted for; the original image files remain intact.
+
 Content follows <https://nexisschool.com/ug/digital-marketing-commerce> and its
 local source components `UgDigitalMarketingPage.tsx`, `UgCurriculumSection.tsx`,
 `DigitalMarketingCareerPathways.tsx`, `DigitalMarketingRoles.tsx` and
