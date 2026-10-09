@@ -145,7 +145,7 @@ button, select { font: inherit; }
 .faculty-card .faculty-name { font-size: 22px; font-weight: 700; line-height: 1.25; }
 .faculty-card .faculty-role { font-size: 15px; line-height: 1.3; }
 /* Replacement faculty retain the same card, logo, copy and portrait positions. */
-.faculty-card-updated { overflow: hidden; border-radius: 10px; background: url("assets/images/image-8319a3eedc2eafea.png") center / 100% 100% no-repeat; }
+.faculty-card-updated { overflow: hidden; border-radius: 10px; background: url("assets/artwork/faculty-card-background.svg") center / 100% 100% no-repeat; }
 .faculty-logo, .faculty-wordmark { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 110px; height: 58px; object-fit: contain; }
 .faculty-logo-wide { width: 180px; }
 .faculty-logo-transparent { mix-blend-mode: multiply; }
