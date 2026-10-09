@@ -256,8 +256,8 @@ button, select { font: inherit; }
 .brand-logo { display: block; width: 100%; height: 84px; border: 0; pointer-events: none; padding: 8px 4px; object-fit: contain; }
 .brand-logo-boat { padding: 16px 18px; }
 .experience-divider { position: absolute; left: 120px; top: 1410px; width: 1245px; height: 3px; background: #666; }
-.achievements-layout { position: absolute; left: 120px; top: 1450px; width: 1245px; height: 650px; display: grid; grid-template-columns: 624px 585px; gap: 36px; }
-.venture-card { border: 4px solid #ef3a5d; box-shadow: 10px 10px #ef3a5d; height: 650px; overflow: hidden; background: white; }
+.achievements-layout { position: absolute; left: 120px; top: 1450px; width: 1245px; height: 650px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
+.venture-card { border: 4px solid #ef3a5d; box-shadow: 8px 8px #ef3a5d; height: 650px; overflow: hidden; background: white; }
 .venture-image { position: relative; height: 340px; background: #dbd8d2; }
 .venture-artwork { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
 .venture-person { position: absolute; left: 54%; top: 34px; right: 20px; }
