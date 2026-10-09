@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node tools/build.mjs",
     "export:print": "node tools/export-print.mjs",
+    "export:digital": "node tools/export-digital.mjs",
     "export:mobile": "python tools/export-mobile.py",
     "dev": "node tools/serve.mjs",
     "start": "node tools/serve.mjs"

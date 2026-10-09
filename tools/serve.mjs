@@ -10,7 +10,7 @@ http.createServer((request, response) => {
   let pathname;
   try { pathname = decodeURIComponent(new URL(request.url, `http://localhost:${port}`).pathname); }
   catch { response.writeHead(400).end('Bad request'); return; }
-  const target = path.resolve(root, '.' + (pathname === '/' ? '/index.html' : pathname));
+  const target = path.resolve(root, '.' + (pathname.endsWith('/') ? pathname + 'index.html' : pathname));
   if (target !== root && !target.startsWith(root + path.sep)) { response.writeHead(403).end('Forbidden'); return; }
   fs.stat(target, (error, stat) => {
     if (error || !stat.isFile()) { response.writeHead(404).end('Not found'); return; }

@@ -6,15 +6,18 @@ import {spawnSync} from 'node:child_process';
 const require=createRequire(process.env.PLAYWRIGHT_PACKAGE_PATH||'C:/Users/rites/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json');
 const {chromium}=require('playwright');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const raw=path.join(root,'tmp','pdfs','chromium-print.pdf'),output=path.join(root,'output','pdf','nexis-2027-print.pdf');
+const edition=process.env.BROCHURE_EDITION;
+if(edition && edition!=='digital-marketing-commerce')throw Error('Unknown brochure edition');
+const name=edition?`nexis-2027-${edition}-print`:'nexis-2027-print';
+const raw=path.join(root,'tmp','pdfs',`${name}-chromium.pdf`),output=path.join(root,'output','pdf',`${name}.pdf`);
 fs.mkdirSync(path.dirname(raw),{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
 try {
  const page=await browser.newPage({viewport:{width:1440,height:1200}});
- await page.goto(process.env.BROCHURE_URL||'http://127.0.0.1:4173',{waitUntil:'networkidle'});
+ await page.goto(process.env.BROCHURE_URL||`http://127.0.0.1:4173/${edition?edition+'/':''}`,{waitUntil:'domcontentloaded'});
  await page.waitForSelector('html[data-ready=true]');
  await page.evaluate(()=>document.documentElement.dataset.view='pages');
- await page.waitForFunction(()=>[...document.querySelectorAll('object')].every(o=>o.contentDocument?.readyState==='complete'));
+ await page.waitForFunction(()=>[...document.querySelectorAll('object')].every(o=>o.contentDocument?.readyState==='complete'),null,{timeout:120000});
  const count=await page.locator('object:not(.page-artwork)').count();
  for(let index=0;index<count;index++) {
   await page.locator('object:not(.page-artwork)').first().evaluate(async object=>{
@@ -47,6 +50,6 @@ try {
  }
  await page.emulateMedia({media:'print'});
  await page.pdf({path:raw,preferCSSPageSize:true,printBackground:true,displayHeaderFooter:false});
- const result=spawnSync(process.env.PYTHON_PATH||'python',[path.join(root,'tools','normalize-print.py'),raw,output],{stdio:'inherit'});
+ const result=spawnSync(process.env.PYTHON_PATH||'python',[path.join(root,'tools','normalize-print.py'),raw,output,await page.title()],{stdio:'inherit'});
  if(result.error)throw result.error;if(result.status!==0)throw Error('Print page normalization failed');
 } finally {await browser.close();}

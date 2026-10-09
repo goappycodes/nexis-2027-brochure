@@ -15,7 +15,7 @@ for page in writer.pages:
     page.mediabox = RectangleObject([0, 0, 1485, 2235])
     page.cropbox = RectangleObject([0, 0, 1485, 2235])
     page.trimbox = RectangleObject([0, 0, 1485, 2235])
-writer.add_metadata({'/Title': 'NEXIS 2027 Brochure', '/Subject': 'Eight pages at 1485 x 2235 points'})
+writer.add_metadata({'/Title': sys.argv[3] if len(sys.argv) > 3 else 'NEXIS 2027 Brochure', '/Subject': 'Eight pages at 1485 x 2235 points'})
 target.parent.mkdir(parents=True, exist_ok=True)
 with target.open('wb') as stream:
     writer.write(stream)

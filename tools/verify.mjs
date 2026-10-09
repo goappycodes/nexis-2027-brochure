@@ -7,7 +7,8 @@ import assert from 'node:assert/strict';
 const require = createRequire('C:/Users/rites/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json');
 const { chromium } = require('playwright');
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const output = path.join(root, 'tmp', 'verification');
+const edition = process.env.BROCHURE_EDITION || '';
+const output = path.join(root, 'tmp', 'verification', edition);
 fs.mkdirSync(output, { recursive: true });
 for (const file of fs.readdirSync(path.join(root, 'assets', 'artwork')).filter(file => file.endsWith('.svg'))) {
   const source = fs.readFileSync(path.join(root, 'assets', 'artwork', file), 'utf8');
@@ -22,7 +23,7 @@ const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
 page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
-await page.goto('http://127.0.0.1:4173', { waitUntil: 'networkidle' });
+await page.goto(process.env.BROCHURE_URL || `http://127.0.0.1:4173/${edition ? edition + '/' : ''}`, { waitUntil: 'domcontentloaded' });
 await page.waitForSelector('html[data-ready="true"]');
 await page.evaluate(() => document.documentElement.dataset.view='pages');
 await page.waitForLoadState('networkidle');
@@ -47,6 +48,8 @@ const summary = await page.evaluate(() => ({
     return { page: el.closest('.page-frame').dataset.page, text: el.textContent.slice(0,45), family: style.fontFamily, weight: style.fontWeight, size: style.fontSize, leading: style.lineHeight, spacing: style.letterSpacing, axes: style.fontVariationSettings };
   }),
   cardOverflow: [...document.querySelectorAll('.admission-card, .business-course-card, .business-project-card, .venture-card, .achievement-card')].filter(el=>el.scrollHeight>el.clientHeight+1).map(el=>({class:el.className,text:el.innerText})),
+  digitalCardOverflow: [...document.querySelectorAll('.digital-tool-group, .digital-role-group')].filter(el=>el.scrollHeight>el.clientHeight+1 || el.scrollWidth>el.clientWidth+1).map(el=>el.innerText),
+  digitalPhotoOverlap: [...document.querySelectorAll('.digital-year .dual-project-card')].filter(el=>el.querySelector('.dual-project-copy').getBoundingClientRect().bottom>el.querySelector('img').getBoundingClientRect().top-3).map(el=>el.innerText),
   overviewOverflow: [...document.querySelectorAll('.overview-course')].filter(el=>el.scrollHeight>el.clientHeight).map(el=>el.innerText),
   coverTagline: (() => {
     const el=document.querySelector('.cover-tagline');

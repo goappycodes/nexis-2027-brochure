@@ -16,6 +16,40 @@ pinch-to-zoom. The viewer keeps the brochure's original layout on every device.
 Desktop opens in Fit to screen, fitting the full spread to both the available
 width and height. The zoom selector still supports larger views.
 
+## Digital Marketing and Commerce edition
+
+Open <http://127.0.0.1:4173/digital-marketing-commerce/> for the dedicated
+eight-page UG Programme in Digital Marketing and Commerce brochure. The general
+brochure stays at the root URL. Both editions use the shared artwork, fonts,
+viewer and 1485 x 2235-point print canvas.
+
+Edit `digital-marketing-commerce/index.html` for this edition's content and
+the `.digital-edition` rules in `brochure.css` for its layout. The six additional
+programme photos are in `assets/images/digital/`; they were copied from the
+supplied NEXIS website repository.
+
+Content follows <https://nexisschool.com/ug/digital-marketing-commerce> and its
+local source components `UgDigitalMarketingPage.tsx`, `UgCurriculumSection.tsx`,
+`DigitalMarketingCareerPathways.tsx`, `DigitalMarketingRoles.tsx` and
+`UgDegreePathways.tsx`. The student experience page presents the wider NEXIS UG
+community; it does not attribute existing students to the new 2027 cohort.
+
+The user confirmed using ₹1,45,000 per semester. Six semesters total ₹8,70,000;
+including the ₹45,000 admission fee, the brochure shows ₹9,15,000. This corrects
+the inconsistent ₹4,80,000 total on the source page. The optional BBA remains
+independent of NEXIS certification, with enrolment at the student's chosen
+UGC-recognised university.
+
+With the server running, `npm run export:digital` creates
+`output/pdf/nexis-2027-digital-marketing-commerce-print.pdf`. It uses the same
+300 dpi artwork preparation and exact eight-page print checks as the general
+brochure export. `BROCHURE_URL` can point to another local port.
+
+For edition-specific browser checks, set
+`BROCHURE_EDITION=digital-marketing-commerce` and run `node tools/verify.mjs
+--quick` or `node tools/verify-flipbook.mjs`. Reports and screenshots stay in
+`tmp/verification/digital-marketing-commerce/`, outside Git.
+
 ## Deploy on Vercel
 
 Import this repository and select the `main` branch. The included `vercel.json`

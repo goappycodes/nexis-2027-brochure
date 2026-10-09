@@ -5,7 +5,8 @@ import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 const require=createRequire(process.env.PLAYWRIGHT_PACKAGE_PATH||'C:/Users/rites/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json');
 const {chromium}=require('playwright');
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),output=path.join(root,'tmp','verification');
+const edition=process.env.BROCHURE_EDITION||'';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),output=path.join(root,'tmp','verification',edition);
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
 const report={},errors=[];
 fs.mkdirSync(output,{recursive:true});
@@ -18,7 +19,7 @@ try{
   return document.querySelectorAll('.page-frame.is-active').length===columns&&Math.abs(document.querySelector('.page-frame').getBoundingClientRect().width/1485-Math.min(width,columns===2?height:Infinity))<.00002;
  });
  page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`);});
- await page.goto('http://127.0.0.1:4173',{waitUntil:'networkidle'});await page.waitForSelector('html[data-ready=true]');
+ await page.goto(process.env.BROCHURE_URL||`http://127.0.0.1:4173/${edition?edition+'/':''}`,{waitUntil:'domcontentloaded'});await page.waitForSelector('html[data-ready=true]');
  const dimensions=await page.locator('.brochure-page').evaluateAll(pages=>pages.map(p=>({width:p.offsetWidth,height:p.offsetHeight})));
  assert.equal(dimensions.length,8);assert.ok(dimensions.every(p=>p.width===1485&&p.height===2235));
  report.dimensions=dimensions;
