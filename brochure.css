@@ -148,6 +148,7 @@ button, select { font: inherit; }
 .faculty-card-updated { overflow: hidden; border-radius: 10px; background: url("assets/images/image-8319a3eedc2eafea.png") center / 100% 100% no-repeat; }
 .faculty-logo, .faculty-wordmark { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 110px; height: 58px; object-fit: contain; }
 .faculty-logo-wide { width: 180px; }
+.faculty-logo-transparent { mix-blend-mode: multiply; }
 .faculty-wordmark { width: 220px; display: grid; place-items: center; font-size: 28px; font-weight: 600; color: #111; }
 .faculty-portrait { position: absolute; left: 0; bottom: 0; width: 300px; height: 250px; object-fit: contain; object-position: center bottom; }
 
