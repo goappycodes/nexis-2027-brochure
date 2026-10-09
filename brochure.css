@@ -263,6 +263,11 @@ button, select { font: inherit; }
 .venture-person { position: absolute; left: 54%; top: 34px; right: 20px; }
 .venture-person h3 { font-size: 50px; line-height: 1.05; }
 .venture-person p { font-size: 24px; margin-top: 16px; }
+.venture-image-lab { display: grid; grid-template-rows: 240px 100px; background: white; }
+.venture-image-lab .venture-artwork { object-fit: cover; object-position: center 62%; }
+.venture-image-lab .venture-person { position: static; padding: 12px 24px; }
+.venture-image-lab .venture-person h3 { font-size: 36px; }
+.venture-image-lab .venture-person p { margin-top: 8px; }
 .venture-copy { padding: 28px; font-size: 26px; line-height: 1.4; }
 .achievements-column { display: grid; grid-template-columns: 48px 1fr; gap: 20px; min-width: 0; height: 650px; }
 .achievements-title { font-size: 42px; line-height: 1; writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; white-space: nowrap; justify-self: center; }
