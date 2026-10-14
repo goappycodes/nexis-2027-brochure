@@ -192,6 +192,23 @@ button, select { font: inherit; }
 .degree-title { font-size: 112px; line-height: 1.08 !important; }
 .degree-copy { display: grid; gap: 34px; }
 .degree-note { font-size: 21px; line-height: 1.35; }
+.degree-pathways { position: absolute; inset: 0 0 auto; height: 949.5px; display: grid; grid-template-columns: 1fr 1fr; background: #0d0e10; pointer-events: auto; }
+.nexis-pathway { padding: 80px 50px 60px var(--gutter); }
+.university-pathway { padding: 80px var(--gutter) 50px 50px; background: #faf9f6; }
+.pathway-label { font-size: 20px; font-weight: 600; line-height: var(--body-leading); }
+.degree-pathways .degree-title, .degree-pathways .pathway-title { font-size: 72px; line-height: var(--heading-leading) !important; margin-top: 24px; }
+.degree-pathways .pathway-subtitle { font-size: 36px; line-height: var(--heading-leading); margin-top: 24px; }
+.pathway-description { font-size: 26px; line-height: var(--body-leading); margin-top: 26px !important; }
+.university-pathway .pathway-description { font-size: 23px; }
+.pathway-independence { margin-top: 50px !important; padding-top: 28px; border-top: 2px solid #ffffff30; font-size: 24px; line-height: var(--body-leading); color: #c5c5ca; }
+.degree-equivalence { margin: 24px 0 0; }
+.degree-equivalence > a { display: block; width: 400px; border: 1px solid #d9d7d2; background: white; }
+.degree-equivalence img { display: block; width: 100%; height: auto; }
+.degree-equivalence figcaption { margin-top: 12px; font-size: 20px; font-weight: 500; line-height: var(--body-leading); }
+.degree-equivalence a { color: inherit; text-decoration: none; }
+.degree-equivalence figcaption > a { display: flex; align-items: center; justify-content: space-between; }
+.degree-equivalence .degree-note { font-size: 18px; font-weight: 400; margin-top: 4px; }
+.degree-equivalence a:focus-visible { outline: 3px solid #ef3a5d; outline-offset: 5px; }
 .admissions-panel { position: absolute; top: 949.5px; left: 0; width: 1485px; height: 684px; background: white; padding: 54px var(--gutter) 40px; pointer-events: auto; }
 .admissions-title { font-size: 106px; line-height: 1.08 !important; }
 .admissions-intro { font-size: 24px; line-height: 1.4; margin-top: 18px !important; }
