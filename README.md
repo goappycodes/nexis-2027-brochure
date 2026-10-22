@@ -16,6 +16,27 @@ pinch-to-zoom. The viewer keeps the brochure's original layout on every device.
 Desktop opens in Fit to screen, fitting the full spread to both the available
 width and height. The zoom selector still supports larger views.
 
+Pages load their artwork only when opened. A page loader covers incomplete
+content until its images and fonts are ready, with a retry button if an asset
+fails. Print / PDF and Ctrl/Cmd+P prepare all eight pages before printing;
+export scripts can await `window.prepareBrochure()` for the same guarantee.
+
+`npm run build` creates the web version in `dist/`, replaces raster references
+with compressed WebP assets, removes unused SVG definitions, and includes only
+referenced assets. Original photos and SVGs remain intact for editing and print
+exports. Small logos use lossless compression; larger photos keep their aspect
+ratio and transparency, capped at 2200 pixels on their longest side.
+
+When source images or SVGs change, run `node tools/optimize-assets.mjs` before
+building. This optional asset preparation uses the bundled Sharp library and
+Python's standard library (`SHARP_PACKAGE_PATH` and `PYTHON_PATH` can override
+their locations). Prepared assets and their source hashes live in `assets/web/`;
+normal development and production builds need no installed dependencies.
+
+With a server running, `node tools/verify-loading.mjs` checks delayed images,
+page loaders, retry, mobile display, print readiness and all four editions.
+Set `BROCHURE_URL` to test a production build; reports stay in `tmp/verification/`.
+
 ## Digital Marketing and Commerce edition
 
 Open <http://127.0.0.1:4173/digital-marketing-commerce/> for the dedicated

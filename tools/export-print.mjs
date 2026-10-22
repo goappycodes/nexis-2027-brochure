@@ -16,6 +16,7 @@ try {
  const page=await browser.newPage({viewport:{width:1440,height:1200}});
  await page.goto(process.env.BROCHURE_URL||`http://127.0.0.1:4173/${edition?edition+'/':''}`,{waitUntil:'domcontentloaded'});
  await page.waitForSelector('html[data-ready=true]');
+ await page.evaluate(()=>window.prepareBrochure());
  await page.evaluate(()=>document.documentElement.dataset.view='pages');
  await page.waitForFunction(()=>[...document.querySelectorAll('object')].every(o=>o.contentDocument?.readyState==='complete'),null,{timeout:120000});
  const count=await page.locator('object:not(.page-artwork)').count();

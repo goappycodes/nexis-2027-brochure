@@ -1,6 +1,5 @@
 /* The brochure uses the original fixed canvas, scaled as a whole for viewing.
    Edit individual positions in index.html; artwork remains sharp at any zoom. */
-@import url("fonts.css");
 
 :root {
   color-scheme: dark;
@@ -199,6 +198,10 @@ button, select { font: inherit; }
 .degree-pathways .degree-title, .degree-pathways .pathway-title { font-size: 72px; line-height: var(--heading-leading) !important; margin-top: 24px; }
 .degree-pathways .pathway-subtitle { font-size: 36px; line-height: var(--heading-leading); margin-top: 24px; }
 .pathway-description { font-size: 26px; line-height: var(--body-leading); margin-top: 26px !important; }
+.pathway-options { display: grid; gap: 24px; margin: 30px 0 0; }
+.pathway-options > div + div { border-top: 2px solid #d9d7d2; padding-top: 24px; }
+.pathway-options dt { font-size: 20px; font-weight: 600; line-height: var(--body-leading); }
+.pathway-options dd { margin: 8px 0 0; font-family: "Fraunces", Georgia, serif; font-size: 36px; font-weight: 400; font-variation-settings: var(--fraunces-variation); line-height: var(--heading-leading); }
 .pathway-independence { margin-top: 32px !important; padding-top: 24px; border-top: 2px solid #d9d7d2; font-size: 22px; line-height: var(--body-leading); color: #555; }
 .admissions-panel { position: absolute; top: 949.5px; left: 0; width: 1485px; height: 684px; background: white; padding: 54px var(--gutter) 40px; pointer-events: auto; }
 .admissions-title { font-size: 106px; line-height: 1.08 !important; }
