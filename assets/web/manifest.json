@@ -1139,6 +1139,14 @@
     "file": "assets/web/bc7f2173a0ebfd880520.webp",
     "sourceHash": "19e4f50dacb6c5b46a0284838bab608bd10df67dcc44ee5f399fe2d5b114949c"
   },
+  "assets/images/recognition/ncvet.png": {
+    "file": "assets/web/a60f1777e8606dcd2643.webp",
+    "sourceHash": "7a2945caed866d03b8a4e4844c5efae9e22ecd06478a31e4122d970125c40352"
+  },
+  "assets/images/recognition/skill-ministry.png": {
+    "file": "assets/web/643c2c68ccc014e0dea4.webp",
+    "sourceHash": "3638bbae1901b4bd4f9223d9cadf9a2798d1284112ccb9641d96be684e725343"
+  },
   "assets/images/technology-classroom.jpg": {
     "file": "assets/web/87a64b1ee62b187b178b.webp",
     "sourceHash": "5664a51f9f7d4a3b39e44792cc1bdfb127bfd0bb6b5dc237de25a04c5b9160a1"

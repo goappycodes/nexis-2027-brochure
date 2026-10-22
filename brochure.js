@@ -3,7 +3,7 @@
   const frames=[...document.querySelectorAll('.page-frame')], zoom=document.querySelector('#zoom'), navigation=document.querySelector('#page-select'), previous=document.querySelector('#previous-page'), next=document.querySelector('#next-page'), counter=document.querySelector('#spread-counter');
   const desktop=matchMedia('(min-width: 900px)'), reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
   const main=document.querySelector('.brochure'), toolbar=document.querySelector('.viewer-toolbar');
-  let current=1,touchStart;
+  let current=1,touchStart,backgroundTimer,backgroundLoading=0;
   const pendingPages=new WeakMap();
   const pendingAssets=new WeakMap();
   const fontsReady=Promise.all([...document.fonts].map(font=>font.load()));
@@ -12,6 +12,9 @@
     const source=asset.dataset.src;
     if(!source)return Promise.resolve();
     const object=asset.tagName==='OBJECT';
+    // Our queue controls when images start; native lazy loading would leave
+    // images on hidden, preloading pages waiting for a viewport intersection.
+    if(!object)asset.loading='eager';
     const isReady=()=>object
       ? asset.contentDocument?.documentElement?.localName==='svg'&&asset.contentDocument.readyState==='complete'
       : asset.complete&&asset.naturalWidth>0;
@@ -54,7 +57,7 @@
     message.textContent=`Loading page ${frame.dataset.page}…`;loader.querySelector('button').hidden=true;
     const promise=Promise.all([fontsReady,...[...frame.querySelectorAll('object[data-src],img[data-src]')].map(loadAsset)])
       .then(()=>new Promise(resolve=>requestAnimationFrame(resolve)))
-      .then(()=>{frame.dataset.loadState='ready';frame.setAttribute('aria-busy','false');})
+      .then(()=>{frame.dataset.loadState='ready';frame.setAttribute('aria-busy','false');scheduleBackgroundLoad();})
       .catch(error=>{
         pendingPages.delete(frame);frame.dataset.loadState='error';frame.setAttribute('aria-busy','false');
         message.textContent=`Page ${frame.dataset.page} couldn’t load.`;loader.querySelector('button').hidden=false;
@@ -67,6 +70,27 @@
   window.prepareBrochure=()=>Promise.all(frames.map(loadPage));
   const spreadSize=()=>desktop.matches?2:1;
   const spreadStart=()=>Math.floor((current-1)/spreadSize())*spreadSize()+1;
+  const visiblePagesReady=()=>frames.filter(frame=>frame.classList.contains('is-active')).every(frame=>frame.dataset.loadState==='ready');
+  function scheduleBackgroundLoad() {
+    if(backgroundTimer||backgroundLoading>=2||!visiblePagesReady())return;
+    // Give the completed spread a chance to paint before starting more work.
+    backgroundTimer=setTimeout(loadNextBackgroundPage,100);
+  }
+  async function loadNextBackgroundPage() {
+    backgroundTimer=undefined;
+    if(backgroundLoading>=2||!visiblePagesReady())return;
+    // Recalculate after navigation: upcoming pages first, then wrap to earlier ones.
+    const nextIndex=(spreadStart()-1+spreadSize())%frames.length;
+    const ordered=[...frames.slice(nextIndex),...frames.slice(0,nextIndex)];
+    const nextFrame=ordered.find(frame=>!frame.dataset.loadState);
+    if(!nextFrame)return;
+    backgroundLoading++;
+    try {
+      const loading=loadPage(nextFrame);scheduleBackgroundLoad();await loading;
+    } catch {
+      // A failed background page keeps its retry control and does not block others.
+    } finally {backgroundLoading--;scheduleBackgroundLoad();}
+  }
   function resize() {
     const columns=spreadSize();
     document.documentElement.dataset.spread=String(columns);
@@ -85,7 +109,7 @@
     navigation.value=String(current);previous.disabled=start===1;next.disabled=end===frames.length;
     counter.textContent=start===end?`${start} / ${frames.length}`:`${start}–${end} / ${frames.length}`;
     frames.forEach((frame,i)=>{const active=i+1>=start&&i+1<=end;frame.classList.toggle('is-active',active);frame.inert=false;});
-    loadVisiblePages();
+    loadVisiblePages().then(scheduleBackgroundLoad);
   }
   function goToPage(number,scroll=true) {
     current=Math.max(1,Math.min(frames.length,Number(number)));updateNavigation();

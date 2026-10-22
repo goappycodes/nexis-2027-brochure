@@ -16,9 +16,11 @@ pinch-to-zoom. The viewer keeps the brochure's original layout on every device.
 Desktop opens in Fit to screen, fitting the full spread to both the available
 width and height. The zoom selector still supports larger views.
 
-Pages load their artwork only when opened. A page loader covers incomplete
-content until its images and fonts are ready, with a retry button if an asset
-fails. Print / PDF and Ctrl/Cmd+P prepare all eight pages before printing;
+The visible spread loads first. Once it is ready, remaining pages preload in
+the background, up to two at a time, starting with the next spread. Navigation loads
+the selected pages immediately and updates the background order. A page loader
+covers incomplete content until its images and fonts are ready, with a retry
+button if an asset fails. Print / PDF and Ctrl/Cmd+P prepare all eight pages before printing;
 export scripts can await `window.prepareBrochure()` for the same guarantee.
 
 `npm run build` creates the web version in `dist/`, replaces raster references

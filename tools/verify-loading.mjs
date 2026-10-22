@@ -23,6 +23,11 @@ try {
   let release;
   const gate=new Promise(resolve=>release=resolve);
   await page.route(nestedURL,async route=>{await gate;await route.continue();});
+  // Background loading must wait for the opening spread, then start page 3.
+  let releaseBackground;
+  const backgroundGate=new Promise(resolve=>releaseBackground=resolve);
+  await page.route(artwork[2],async route=>{await backgroundGate;await route.continue();});
+  await page.route(artwork[3],async route=>{await backgroundGate;await route.continue();});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('.page-frame[data-page="1"] .page-loader',{state:'visible'});
   assert.equal(await page.locator('#page-1').evaluate(el=>el.closest('.page-frame').dataset.loadState),'loading');
@@ -31,9 +36,11 @@ try {
   await page.screenshot({path:output+'/cover-loading.png'});
   release();
   await page.waitForSelector('html[data-ready=true]');
-  await page.waitForLoadState('networkidle');
+  await page.waitForSelector('.page-frame[data-page="3"][data-load-state=loading]',{state:'attached'});
+  assert.equal(await page.locator('.page-frame[data-page="5"] object[data]').count(),0);
   report.initial=await page.evaluate(()=>({requests:performance.getEntriesByType('resource').length,bytes:performance.getEntriesByType('resource').reduce((sum,r)=>sum+r.encodedBodySize,0),loadedPages:[...document.querySelectorAll('.page-frame[data-load-state=ready]')].map(el=>el.dataset.page)}));
   assert.deepEqual(report.initial.loadedPages,['1','2']);
+  report.background='Opening spread finishes before page 3 starts; at most two pages preload in the background';
   await page.screenshot({path:output+'/cover-ready.png'});
   // New pages get their own loader; an already loaded neighbour stays visible.
   let releaseDegree;
@@ -41,6 +48,7 @@ try {
   await page.route(artwork[7],async route=>{await degreeGate;await route.continue();});
   await page.selectOption('#page-select','8');
   await page.waitForSelector('.page-frame[data-page="8"][data-load-state=loading]');
+  assert.equal(await page.locator('.page-frame[data-page="3"]').getAttribute('data-load-state'),'loading');
   assert.equal(await page.locator('#page-8').evaluate(el=>getComputedStyle(el).visibility),'hidden');
   await page.screenshot({path:output+'/degree-loading.png'});
   releaseDegree();
@@ -60,6 +68,7 @@ try {
   await page.locator('#page-8').screenshot({path:output+'/degree-mobile.png'});
   // The print control must finish deferred pages before opening print preview.
   await page.setViewportSize({width:1440,height:1200});
+  releaseBackground();
   await page.evaluate(()=>window.print=()=>window.printedStates=[...document.querySelectorAll('.page-frame')].map(el=>el.dataset.loadState));
   await page.locator('#print').click();
   await page.waitForFunction(()=>window.printedStates?.length===8);
@@ -71,12 +80,35 @@ try {
   assert.equal(await page.locator('.page-loader:visible').count(),0);
   report.geometry=geometry;
   assert.deepEqual(errors,[]);assert.deepEqual(failures,[]);
+  const logos=await page.locator('.pathway-logos img').evaluateAll(images=>images.map(image=>({alt:image.alt,loaded:image.complete&&image.naturalWidth>0})));
+  assert.equal(logos.length,2);assert.ok(logos.every(logo=>logo.loaded));report.logos=logos;
+  // Without navigating or preparing print, every page should finish automatically.
+  for(const width of [1440,390]) {
+    await page.emulateMedia({media:'screen'});await page.setViewportSize({width,height:1200});
+    await page.goto(base,{waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>document.querySelectorAll('.page-frame[data-load-state=ready]').length===8,null,{timeout:90000});
+    assert.equal(await page.locator('#page-select').inputValue(),'1');
+    assert.equal(await page.locator('.page-frame.is-active').count(),width>=900?2:1);
+    await page.locator('#next-page').click();
+    assert.equal(await page.locator('.page-frame.is-active .page-loader:visible').count(),0);
+  }
+  report.automatic='Desktop and mobile load all eight pages while staying on page 1; next turn is already ready';
+  let failBackground=true;
+  await page.route(artwork[2],route=>{if(failBackground){failBackground=false;return route.abort('failed');}return route.continue();});
+  await page.goto(base,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>document.querySelectorAll('.page-frame[data-load-state=ready]').length===7&&document.querySelector('.page-frame[data-page="3"]').dataset.loadState==='error',null,{timeout:90000});
+  assert.equal(await page.locator('#page-select').inputValue(),'1');
+  await page.selectOption('#page-select','3');
+  await page.waitForSelector('.page-frame[data-page="3"][data-load-state=ready]');
+  report.backgroundRetry='A failed background page does not block others and retries when opened';
   report.editions=[];
+  await page.setViewportSize({width:1440,height:1200});
   for(const edition of ['business-management','computer-science-ai','digital-marketing-commerce']) {
     await page.emulateMedia({media:'screen'});
     await page.goto(new URL(edition+'/',base).href,{waitUntil:'domcontentloaded'});
     await page.waitForSelector('html[data-ready=true]');
-    await page.evaluate(()=>window.prepareBrochure());
+    await page.waitForFunction(()=>document.querySelectorAll('.page-frame[data-load-state=ready]').length===8,null,{timeout:90000});
+    assert.equal(await page.locator('#page-select').inputValue(),'1');
     assert.equal(await page.locator('.page-frame[data-load-state=ready]').count(),8);
     report.editions.push(edition);
   }
