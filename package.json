@@ -10,6 +10,7 @@
     "export:business": "node tools/export-business.mjs",
     "export:cs": "node tools/export-cs.mjs",
     "export:mobile": "python tools/export-mobile.py",
+    "export:optimized": "node tools/export-optimized.mjs",
     "dev": "node tools/serve.mjs",
     "start": "node tools/serve.mjs"
   }

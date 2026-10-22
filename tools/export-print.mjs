@@ -9,7 +9,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const edition=process.env.BROCHURE_EDITION;
 if(edition && !['digital-marketing-commerce','business-management','computer-science-ai'].includes(edition))throw Error('Unknown brochure edition');
 const name=edition?`nexis-2027-${edition}-print`:'nexis-2027-print';
-const raw=path.join(root,'tmp','pdfs',`${name}-chromium.pdf`),output=path.join(root,'output','pdf',`${name}.pdf`);
+const raw=path.join(root,'tmp','pdfs',`${name}-chromium.pdf`),output=path.join(root,'output','pdf','Print versions',`${name}.pdf`);
 fs.mkdirSync(path.dirname(raw),{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
 try {

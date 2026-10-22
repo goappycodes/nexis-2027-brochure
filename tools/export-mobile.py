@@ -1,4 +1,4 @@
-"""Export eight flattened pages within a mobile-sharing size budget."""
+"""Export eight flattened pages within a digital-sharing size budget."""
 import argparse
 import hashlib
 import io
@@ -17,11 +17,13 @@ from pypdf.generic import (
 
 ROOT = Path(__file__).resolve().parent.parent
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--source', type=Path, default=ROOT / 'output/pdf/nexis-2027-print.pdf')
-parser.add_argument('--output', type=Path, default=ROOT / 'output/pdf/nexis-2027-mobile.pdf')
-parser.add_argument('--dpi', type=int, default=240)
+parser.add_argument('--source', type=Path, default=ROOT / 'output/pdf/Print versions/nexis-2027-print.pdf')
+parser.add_argument('--output', type=Path, default=ROOT / 'output/pdf/Optimized versions/nexis-2027-optimized.pdf')
+parser.add_argument('--title', default='NEXIS 2027 - General Brochure - Digital Sharing')
+parser.add_argument('--review-dir', type=Path, default=ROOT / 'tmp/pdfs/mobile-review')
+parser.add_argument('--dpi', type=int, default=144)
 parser.add_argument('--compression', choices=('sharing', 'lossless'), default='sharing')
-parser.add_argument('--max-mb', type=float, default=25, help='Decimal MB limit; 0 disables the limit.')
+parser.add_argument('--max-mb', type=float, default=10, help='Decimal MB limit; 0 disables the limit.')
 args = parser.parse_args()
 if not args.source.is_file():
     parser.error('Print master missing. Run npm run export:print first.')
@@ -30,13 +32,13 @@ if args.dpi < 144 or args.dpi % 24:
 if args.max_mb < 0 or not math.isfinite(args.max_mb):
     parser.error('The file size limit must be a finite, non-negative number.')
 if args.source.resolve() == args.output.resolve():
-    parser.error('The mobile copy must not overwrite the print master.')
+    parser.error('The sharing copy must not overwrite the print master.')
 
-review = ROOT / 'tmp/pdfs/mobile-review'
+review = args.review_dir
 review.mkdir(parents=True, exist_ok=True)
 source = fitz.open(args.source)
 assert len(source) == 8
-qualities = list(range(98, 89, -1)) if args.compression == 'sharing' else [None]
+qualities = list(range(98, 79, -2)) if args.compression == 'sharing' else [None]
 encoded, hashes, dimensions = [], [], []
 
 for index, page in enumerate(source):
@@ -45,6 +47,10 @@ for index, page in enumerate(source):
     hashes.append(hashlib.sha256(pixels.samples).hexdigest())
     dimensions.append([pixels.width, pixels.height])
     image = Image.frombytes('RGB', (pixels.width, pixels.height), pixels.samples)
+    # Reuse the exact rendered pixels for refinement and quality checks instead
+    # of repeatedly rendering the original PDF's expensive transparent artwork.
+    if args.compression == 'sharing':
+        image.save(review / f'source-{index + 1}.png', compress_level=1)
     variants = {}
     for quality in qualities:
         buffer = io.BytesIO()
@@ -98,7 +104,7 @@ def make_pdf(quality):
         page[NameObject('/Contents')] = writer._add_object(content)
         page.cropbox = page.trimbox = page.mediabox
     compression = 'lossless RGB' if quality is None else f'JPEG quality {quality}, full RGB'
-    writer.add_metadata({'/Title': 'NEXIS 2027 - Mobile Brochure',
+    writer.add_metadata({'/Title': args.title,
                          '/Subject': f'Flattened pages, {compression}, {args.dpi} dpi'})
     writer._root_object[NameObject('/PageLayout')] = NameObject('/SinglePage')
     writer._root_object[NameObject('/PageMode')] = NameObject('/UseNone')
@@ -115,7 +121,21 @@ for quality in qualities:
         break
 else:
     parser.error('The size limit cannot be met at this resolution and quality. '
-                 'Use --dpi 192 or increase --max-mb; the previous PDF is unchanged.')
+                 'Use a lower --dpi (minimum 144) or increase --max-mb; the previous PDF is unchanged.')
+# Refine the two-point search to the highest intermediate quality that fits.
+if quality is not None and quality < 98:
+    candidate = quality + 1
+    for index, page in enumerate(source):
+        image = Image.open(review / f'source-{index + 1}.png').convert('RGB')
+        buffer = io.BytesIO()
+        image.save(buffer, format='JPEG', quality=candidate, subsampling=0, optimize=True)
+        encoded[index][candidate] = buffer.getvalue()
+        image.close()
+        del image
+    candidate_data = make_pdf(candidate)
+    if not limit or len(candidate_data) <= limit:
+        quality, data = candidate, candidate_data
+    del candidate_data
 print(f'Selected {args.compression}, quality {quality}: {len(data) / 1_000_000:.2f} MB', flush=True)
 encoded.clear()
 
@@ -137,15 +157,15 @@ for index, page in enumerate(result):
     if quality is None:
         assert hashlib.sha256(pixels.samples).hexdigest() == hashes[index], f'Pixel mismatch on page {index + 1}'
     else:
-        original_pixels = source[index].get_pixmap(dpi=args.dpi, colorspace=fitz.csRGB, alpha=False, annots=True)
-        original = Image.frombytes('RGB', (pixels.width, pixels.height), original_pixels.samples)
+        original = Image.open(review / f'source-{index + 1}.png').convert('RGB')
+        assert hashlib.sha256(original.tobytes()).hexdigest() == hashes[index]
         histogram = ImageChops.difference(exported, original).histogram()
         mse = sum((value % 256) ** 2 * count for value, count in enumerate(histogram)) / (pixels.width * pixels.height * 3)
         psnr = 10 * math.log10(255 ** 2 / mse) if mse else 100.0
         assert psnr >= 38, f'Compression quality too low on page {index + 1}: {psnr:.2f} dB'
         scores.append(round(psnr, 2))
         original.close()
-        del original_pixels
+        (review / f'source-{index + 1}.png').unlink()
     exported.close()
     del pixels
     print(f'Verified page {index + 1}/8', flush=True)

@@ -71,7 +71,7 @@ independent of NEXIS certification, with enrolment at the student's chosen
 UGC-recognised university.
 
 With the server running, `npm run export:digital` creates
-`output/pdf/nexis-2027-digital-marketing-commerce-print.pdf`. It uses the same
+`output/pdf/Print versions/nexis-2027-digital-marketing-commerce-print.pdf`. It uses the same
 300 dpi artwork preparation and exact eight-page print checks as the general
 brochure export. `BROCHURE_URL` can point to another local port.
 
@@ -105,7 +105,7 @@ pages' inconsistent three-year totals. NEXIS certification and the optional
 independently enrolled university degrees are stated separately.
 
 `npm run export:business` and `npm run export:cs` export the respective print
-PDFs to `output/pdf/`. The static build includes all three dedicated editions.
+PDFs to `output/pdf/Print versions/`. The static build includes all three dedicated editions.
 Use `BROCHURE_EDITION=business-management` or `computer-science-ai` with the
 existing browser verification scripts. Generated PDFs and reviews stay out of Git.
 
@@ -147,7 +147,7 @@ naturally; there is no letter-by-letter positioning or horizontal text stretch.
 The scripts in `tools/` were used for the initial PDF migration and verification.
 Do not rerun the extraction/build/refinement scripts for normal content edits:
 they can replace edited HTML. Edit the HTML and CSS directly instead.
-The `build`, `export:print`, and `export:mobile` npm scripts only write output
+The `build`, `export:print`, `export:mobile`, and `export:optimized` npm scripts only write output
 files and do not overwrite the brochure source.
 
 ## Print
@@ -160,7 +160,7 @@ the same page proportions. Print styles hide the viewer and keep one brochure
 page per printed sheet, with no margins.
 
 For the print PDF, keep the development server running and run
-`npm run export:print`. It writes `output/pdf/nexis-2027-print.pdf`, verifies
+`npm run export:print`. It writes `output/pdf/Print versions/nexis-2027-print.pdf`, verifies
 all eight page boxes at exactly 1485 x 2235 points, and renders transparent
 artwork panels at 300 dpi to prevent browser PDF mask artifacts. HTML text
 remains vector text. Generated PDFs stay out of Git.
@@ -171,14 +171,22 @@ it uses this workspace's installed runtimes by default. Set
 or `BROCHURE_URL` to export from another local server. These dependencies are
 not required by the deployed flipbook or the static build.
 
-## Mobile sharing PDF
+## Organized PDF editions
 
-After creating the print master, run `npm run export:mobile`. It writes
-`output/pdf/nexis-2027-mobile.pdf`, a fully flattened, eight-page PDF that opens
-with one page fitted to the viewer. All page dimensions match the print master.
+Final PDFs are grouped into two folders, with General, Business Management,
+Computer Science & AI, and Digital Marketing & Commerce in each:
 
-Pages render at 240 dpi (4950 x 7450 pixels). The exporter selects the highest
-JPEG quality between 90 and 98 that keeps the complete PDF within 25 MB,
+- `output/pdf/Print versions/`: full-quality masters with vector text and 300 dpi artwork panels.
+- `output/pdf/Optimized versions/`: smaller PDFs for digital sharing.
+
+With the development server running, refresh the four print masters using
+`npm run export:print`, `npm run export:business`, `npm run export:cs`, and
+`npm run export:digital`. Then run `npm run export:optimized` to create all four
+sharing copies from those masters. Each opens with one page fitted to the viewer;
+all eight pages retain the original 1485 x 2235-point dimensions.
+
+Sharing pages render at 144 dpi (2970 x 4470 pixels). The exporter selects the highest
+JPEG quality between 80 and 98 that keeps each complete PDF within 10 MB,
 without resizing pages or subsampling color. It checks the actual file size,
 page boxes, pixel dimensions, and image quality before replacing the output.
 This sharing compression is lossy; the print master retains the source quality.
@@ -188,6 +196,11 @@ searchable text. Keep the vector print master for printing or extreme zoom.
 For the larger lossless version, run
 `npm run export:mobile -- --compression lossless --max-mb 0`.
 That mode requires pixel-identical output at the export resolution.
+
+`npm run export:mobile` remains available for exporting just the general sharing
+copy, now at `output/pdf/Optimized versions/nexis-2027-optimized.pdf`. For a
+higher-resolution copy, add `-- --dpi 240 --max-mb 25`. The Python exporter also
+accepts `--source`, `--output`, `--title`, and `--review-dir` for individual editions.
 
 The optional Python exporter requires `PyMuPDF`, `Pillow`, and `pypdf`. It does
 not change the HTML flipbook or its deployment. Generated PDFs and review files
